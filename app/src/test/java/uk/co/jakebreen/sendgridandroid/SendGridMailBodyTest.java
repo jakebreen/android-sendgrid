@@ -41,7 +41,7 @@ public class SendGridMailBodyTest {
 
     @Test
     public void givenToEmail_whenCreatingMailBodyAndNameIsEmpty_thenReturnJsonBodyWithoutNameValue() throws JSONException {
-        String expectedValue = "[{\"to\":[{\"email\":\"john.doe@example.com\"}]}]";
+        String expectedValue = "{\"to\":[{\"email\":\"john.doe@example.com\"}]}";
 
         Map<String, String> map = new HashMap<>();
         map.put("john.doe@example.com", EMPTY);
@@ -52,7 +52,7 @@ public class SendGridMailBodyTest {
 
     @Test
     public void givenFromEmail_whenCreatingMailBody_thenReturnJsonBody() throws JSONException {
-        String expectedValue = "[{\"from\":[{\"name\":\"John Doe\",\"email\":\"john.doe@example.com\"}]}]";
+        String expectedValue = "{\"name\":\"John Doe\",\"email\":\"john.doe@example.com\"}";
 
         Map<String, String> map = new HashMap<>();
         map.put("john.doe@example.com", "John Doe");
@@ -91,7 +91,7 @@ public class SendGridMailBodyTest {
         map.put(TYPE_PLAIN, Collections.singletonList(CONTENT_BODY));
         when(mail.getContent()).thenReturn(map);
 
-        assertEquals(expectedValue, getContentParams(mail));
+        assertEquals(expectedValue, getContentParams(mail).toString());
     }
 
     @Test
@@ -103,7 +103,7 @@ public class SendGridMailBodyTest {
         map.put(TYPE_PLAIN, Arrays.asList(CONTENT_BODY, CONTENT_BODY));
         when(mail.getContent()).thenReturn(map);
 
-        assertEquals(expectedValue, getContentParams(mail));
+        assertEquals(expectedValue, getContentParams(mail).toString());
     }
 
     @Test
@@ -116,11 +116,11 @@ public class SendGridMailBodyTest {
         map.put(TYPE_HTML, Collections.singletonList(CONTENT_BODY));
         when(mail.getContent()).thenReturn(map);
 
-        assertEquals(expectedValue, getContentParams(mail));
+        assertEquals(expectedValue, getContentParams(mail).toString());
     }
 
     @Test
-    public void xxx() {
+    public void update_me() {
         Map<String, String> toMap = new HashMap<>();
         toMap.put("john.doe@example.com", "John Doe");
         toMap.put("kate.green@example.com", "Kate Green");
@@ -129,6 +129,10 @@ public class SendGridMailBodyTest {
         Map<String, String> fromMap = new HashMap<>();
         fromMap.put("john.doe@example.com", "John Doe");
         when(mail.getFrom()).thenReturn(fromMap);
+        when(mail.getSubject()).thenReturn("Mail subject");
+        Map<String, List<String>> contentMap = new HashMap<>();
+        contentMap.put("text/plain", Arrays.asList("Content body 1", "Content body 2"));
+        when(mail.getContent()).thenReturn(contentMap);
 
         System.out.println(create(mail).getBody());
     }

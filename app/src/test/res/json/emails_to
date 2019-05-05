@@ -1,18 +1,16 @@
-[
-  {
-    "to":[
-      {
-        "name":"John Doe",
-        "email":"john.doe@example.com"
-      },
-      {
-        "name":"Will Smith",
-        "email":"will.smith@example.com"
-      },
-      {
-        "name":"Kate Green",
-        "email":"kate.green@example.com"
-      }
-    ]
-  }
-]
+{
+  "to":[
+    {
+      "name":"John Doe",
+      "email":"john.doe@example.com"
+    },
+    {
+      "name":"Will Smith",
+      "email":"will.smith@example.com"
+    },
+    {
+      "name":"Kate Green",
+      "email":"kate.green@example.com"
+    }
+  ]
+}

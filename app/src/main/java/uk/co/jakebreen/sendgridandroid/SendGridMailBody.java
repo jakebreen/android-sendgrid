@@ -19,65 +19,45 @@ class SendGridMailBody {
     private static final String BODY_BCC = "bcc";
     private static final String BODY_SUBJECT = "subject";
     private static final String BODY_CONTENT = "content";
+    private static final String BODY_TEMPLATE_ID = "template_id";
+    private static final String BODY_REPLY_TO = "reply_to";
 
     private static final String PARAMS_EMAIL = "email";
     private static final String PARAMS_NAME = "name";
     private static final String PARAMS_CONTENT_TYPE = "type";
     private static final String PARAMS_CONTENT_VALUE = "value";
 
-//    private Map<String, String> body;
-    private JSONArray body;
+    private JSONObject body;
 
-    private SendGridMailBody(JSONArray body) {
+    private SendGridMailBody(JSONObject body) {
         this.body = body;
     }
 
     static SendGridMailBody create(SendGridMail mail) {
-        JSONArray body = new JSONArray();
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put(BODY_PERSONALIZATIONS, getToParams(mail));
-            body.put(jsonObject);
-            body.put(getFromParams(mail));
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(getToParams(mail));
+            jsonArray.put(getCcParams(mail));
+            jsonArray.put(getBccParams(mail));
+            jsonArray.put(getSubjectParams(mail));
+            jsonObject.put(BODY_PERSONALIZATIONS, jsonArray);
+            jsonObject.put(BODY_FROM, getFromParams(mail));
+            jsonObject.put(BODY_CONTENT, getContentParams(mail));
+            jsonObject.put(BODY_TEMPLATE_ID, getTemplateId(mail));
+            jsonObject.put(BODY_REPLY_TO, getReplyToParams(mail));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-//        body.put(BODY_TO, getToParams(mail));
-
-//        try {
-//            Map<String, String> toMap = new HashMap<>();
-//            toMap.put(BODY_TO, getToParams(mail));
-
-//            body.put(BODY_PERSONALIZATIONS, setPersonalizations());
-
-//            body.put(BODY_CC, getToParams(mail));
-
-//            body.put(BODY_CC, getCcParams(mail));
-//            body.put(BODY_BCC, getBccParams(mail));
-//            body.put(BODY_FROM, getFromParams(mail));
-//            body.put(BODY_SUBJECT, getSubjectParams(mail));
-//            body.put(BODY_CONTENT, getContentParams(mail));
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-        return new SendGridMailBody(body);
+        return new SendGridMailBody(jsonObject);
     }
 
-//    private static String setPersonalizations(String params) throws JSONException {
-//        JSONArray jsonArray = new JSONArray();
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put(BODY_PERSONALIZATIONS, params);
-//        jsonArray.put(jsonObject);
-//        return params;
-//    }
-
-    JSONArray getBody() {
+    JSONObject getBody() {
         return body;
     }
 
-    static String getContentParams(SendGridMail mail) throws JSONException {
+    static JSONArray getContentParams(SendGridMail mail) throws JSONException {
         JSONArray jsonArray = new JSONArray();
         for (Entry<String, List<String>> set : mail.getContent().entrySet()) {
             JSONObject jsonObject = new JSONObject();
@@ -87,40 +67,53 @@ class SendGridMailBody {
                 jsonArray.put(jsonObject);
             }
         }
-        return jsonArray.toString();
+        return jsonArray;
     }
 
-    static String getSubjectParams(SendGridMail mail) {
-        return mail.getSubject();
+    static JSONObject getSubjectParams(SendGridMail mail) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(BODY_SUBJECT, mail.getSubject());
+        return jsonObject;
     }
 
-    static JSONArray getBccParams(SendGridMail mail) throws JSONException {
-        JSONArray jsonArray = new JSONArray();
+    static String getTemplateId(SendGridMail mail) {
+        return mail.getTemplateId();
+    }
+
+    static JSONObject getBccParams(SendGridMail mail) throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(BODY_BCC, convertEmails(mail.getBcc()));
-        return jsonArray.put(jsonObject);
+        return jsonObject;
     }
 
-    static JSONArray getCcParams(SendGridMail mail) throws JSONException {
-        JSONArray jsonArray = new JSONArray();
+    static JSONObject getCcParams(SendGridMail mail) throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(BODY_CC, convertEmails(mail.getCc()));
-        return jsonArray.put(jsonObject);
+        return jsonObject;
     }
 
-    static JSONArray getToParams(SendGridMail mail) throws JSONException {
-        JSONArray jsonArray = new JSONArray();
+    static JSONObject getToParams(SendGridMail mail) throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(BODY_TO, convertEmails(mail.getTo()));
-        return jsonArray.put(jsonObject);
+        return jsonObject;
     }
 
-    static JSONArray getFromParams(SendGridMail mail) throws JSONException {
-        JSONArray jsonArray = new JSONArray();
+    static JSONObject getFromParams(SendGridMail mail) throws JSONException {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(BODY_FROM, convertEmails(mail.getFrom()));
-        return jsonArray.put(jsonObject);
-//        return jsonArray.put(jsonObject);
+        for (Entry<String, String> set : mail.getFrom().entrySet()) {
+            jsonObject.put(PARAMS_EMAIL, set.getKey());
+            jsonObject.put(PARAMS_NAME, set.getValue());
+        }
+        return jsonObject;
+    }
+
+    static JSONObject getReplyToParams(SendGridMail mail) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        for (Entry<String, String> set : mail.getReplyTo().entrySet()) {
+            jsonObject.put(PARAMS_EMAIL, set.getKey());
+            jsonObject.put(PARAMS_NAME, set.getValue());
+        }
+        return jsonObject;
     }
 
     private static JSONArray convertEmails(Map<String, String> emailMap) throws JSONException {
