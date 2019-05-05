@@ -1,0 +1,66 @@
+apply plugin: 'com.android.library'
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'sendgridandroid'
+
+    publishedGroupId = 'uk.co.jakebreen'
+    libraryName = 'SendGridAndroid'
+    artifact = 'sendgridandroid'
+
+    libraryDescription = 'A library utilising the SendGrid'
+
+//    siteUrl = 'https://github.com/PPartisan/RunDo'
+//    gitUrl = 'https://github.com/PPartisan/RunDo.git'
+
+    libraryVersion = '1.0.5'
+
+    developerId = '***REMOVED***'
+    developerName = 'Jake Breen'
+    developerEmail = 'jbreendev@gmail.com'
+
+    licenseName = 'The MIT License (MIT)'
+//    licenseUrl = 'https://github.com/PPartisan/RunDoOld/blob/master/LICENSE.md'
+    allLicenses = ["MIT"]
+}
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+    sourceSets {
+        test {
+            resources.srcDirs += ['src/test/res']
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.23.0'
+    testImplementation 'org.json:json:20140107'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
