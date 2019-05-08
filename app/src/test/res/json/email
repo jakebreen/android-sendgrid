@@ -1,0 +1,40 @@
+{
+  "personalizations":[
+    {
+      "to":[
+        {
+          "name":"John Doe",
+          "email":"john.doe@example.com"
+        },
+        {
+          "name":"Will Smith",
+          "email":"will.smith@example.com"
+        },
+        {
+          "name":"Kate Green",
+          "email":"kate.green@example.com"
+        }
+      ]
+    }
+  ],
+  "reply_to":{
+    "name":"No reply",
+    "email":"no-reply@email.com"
+  },
+  "subject":"Mail subject",
+  "from":{
+    "name":"John Doe",
+    "email":"john.doe@example.com"
+  },
+  "template_id":"733ba07f-ead1-41fc-933a-3976baa23716",
+  "content":[
+    {
+      "type":"text/plain",
+      "value":"Email content body"
+    },
+    {
+      "type":"text/html",
+      "value":"Email content body"
+    }
+  ]
+}

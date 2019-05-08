@@ -15,10 +15,12 @@ public class SendGridMail {
     private final Map<String, String> cc = new HashMap<>();
     private final Map<String, String> bcc = new HashMap<>();
     private String subject;
-    private final Map<String, List<String>> content = new HashMap<>();
+    private final Map<String, String> content = new HashMap<>();
     private final Map<String, String> from = new HashMap<>();
     private final Map<String, String> replyTo = new HashMap<>();
     private String templateId;
+    private List<String> categories = new ArrayList<>();
+    private int sendAt;
 
     public SendGridMail() { }
 
@@ -56,20 +58,25 @@ public class SendGridMail {
         this.templateId = templateId;
     }
 
-    public void setBody(@NonNull String body) {
+    public void setContent(@NonNull String body) {
         if (body.length() == 0) body = " ";
-        if (!content.containsKey(TYPE_PLAIN))
-            content.put(TYPE_PLAIN, Collections.singletonList(body));
-        else
-            content.get(TYPE_PLAIN).add(body);
+        content.put(TYPE_PLAIN, body);
     }
 
-    public void setHtmlBody(@NonNull String body) {
+    public void setHtmlContent(@NonNull String body) {
         if (body.length() == 0) body = " ";
-        if (!content.containsKey(TYPE_HTML))
-            content.put(TYPE_HTML, Collections.singletonList(body));
-        else
-            content.get(TYPE_HTML).add(body);
+        content.put(TYPE_HTML, body);
+    }
+
+    public void addCategory(String category) {
+        if (categories.size() <= 10) {
+            category = category.substring(0, Math.min(category.length(), 255));
+            categories.add(category);
+        }
+    }
+
+    public void setSendAt(int sendAt) {
+        this.sendAt = sendAt;
     }
 
     Map<String, String> getTo() {
@@ -88,7 +95,7 @@ public class SendGridMail {
         return subject;
     }
 
-    Map<String, List<String>> getContent() {
+    Map<String, String> getContent() {
         return content;
     }
 
@@ -102,5 +109,13 @@ public class SendGridMail {
 
     String getTemplateId() {
         return templateId;
+    }
+
+    List<String> getCategories() {
+        return categories;
+    }
+
+    int getSendAt() {
+        return sendAt;
     }
 }

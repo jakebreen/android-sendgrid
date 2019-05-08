@@ -1,5 +1,9 @@
 package uk.co.jakebreen.sendgridandroid;
 
+import android.support.annotation.NonNull;
+
+import java.util.concurrent.Callable;
+
 public class SendGrid {
 
     private static final String MAIL_URL = "mail/send";
@@ -14,12 +18,12 @@ public class SendGrid {
         api = new SendGridCall();
     }
 
-    public SendGrid create(String apiKey) {
+    public static SendGrid create(@NonNull String apiKey) {
         return new SendGrid(apiKey);
     }
 
-    public SendGridResponse send() throws Exception {
-        return api.call(MAIL_URL, credentials).call();
+    public Callable<SendGridResponse> send(@NonNull SendGridMail mail) {
+        return api.call(MAIL_URL, credentials, SendGridMailBody.create(mail));
     }
 
     private String createCredentials(String key) {

@@ -1,63 +1,63 @@
 package uk.co.jakebreen.sendgridandroid;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Map;
 import java.util.concurrent.Callable;
+
+import static uk.co.jakebreen.sendgridandroid.SendGridResponse.Factory.error;
+import static uk.co.jakebreen.sendgridandroid.SendGridResponse.Factory.success;
 
 class SendGridCall {
 
     private static final String BASE_URL = "https://sendgrid.com/v3/";
 
-    Callable<SendGridResponse> call(String url, final String key) {
+    Callable<SendGridResponse> call(String url, final String key, SendGridMailBody body) {
         final String apiUrl = String.format("%s%s", BASE_URL, url);
-        return new Callable<SendGridResponse>() {
-            @Override
-            public SendGridResponse call() throws IOException {
-                final URL url = new URL(apiUrl);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoInput(true);
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Authorization", key);
+        return () -> {
+            final URL url1 = new URL(apiUrl);
+            final HttpURLConnection urlConnection = (HttpURLConnection) url1.openConnection();
+            urlConnection.setDoOutput(true);
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("Authorization", key);
+            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setRequestProperty("Content-Type", "application/json; utf-8");
 
-                InputStream inputStream = urlConnection.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            OutputStream outputStream = urlConnection.getOutputStream();
+            outputStream.write(body.getBody().toString().getBytes("UTF-8"));
+            outputStream.close();
 
-                int data = inputStreamReader.read();
-                while (data != -1) {
-                    char current = (char) data;
-                    data = inputStreamReader.read();
-                    System.out.print(current);
-                }
-
-                urlConnection.disconnect();
-
-                return new SendGridResponse();
+            InputStream inputStream;
+            try {
+                inputStream = urlConnection.getInputStream();
+            } catch(IOException exception) {
+                inputStream = urlConnection.getErrorStream();
             }
+
+            int code = urlConnection.getResponseCode();
+            String response = readInputStream(inputStream);
+            urlConnection.disconnect();
+
+            return createResponse(code, response);
         };
     }
 
-    private void XXX(Map<String, String> params) {
-        StringBuilder sbParams = new StringBuilder();
-        int i = 0;
-        for (String key : params.keySet()) {
-            try {
-                if (i != 0){
-                    sbParams.append("&");
-                }
-                sbParams.append(key).append("=")
-                        .append(URLEncoder.encode(params.get(key), "UTF-8"));
-
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            i++;
+    private String readInputStream(final InputStream inputStream) throws IOException {
+        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        final StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line);
         }
+        bufferedReader.close();
+        return stringBuilder.toString();
+    }
+
+    private SendGridResponse createResponse(int code, String response) {
+        if (code >= 200 && code < 300)
+            return success(code);
+        else
+            return error(code, response);
     }
 
 }

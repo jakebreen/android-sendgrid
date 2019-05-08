@@ -36,7 +36,7 @@ public class SendGridMailBodyTest {
         map.put("will.smith@example.com", "Will Smith");
         when(mail.getTo()).thenReturn(map);
 
-        assertEquals(parseEmails("/json/emails_to"), getToParams(mail).toString());
+        assertEquals(parseJsonFile("/json/emails_to"), getToParams(mail).toString());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class SendGridMailBodyTest {
         map.put("will.smith@example.com", "Will Smith");
         when(mail.getCc()).thenReturn(map);
 
-        assertEquals(parseEmails("/json/emails_cc"), getCcParams(mail).toString());
+        assertEquals(parseJsonFile("/json/emails_cc"), getCcParams(mail).toString());
     }
 
     @Test
@@ -80,64 +80,83 @@ public class SendGridMailBodyTest {
         map.put("will.smith@example.com", "Will Smith");
         when(mail.getBcc()).thenReturn(map);
 
-        assertEquals(parseEmails("/json/emails_bcc"), getBccParams(mail).toString());
+        assertEquals(parseJsonFile("/json/emails_bcc"), getBccParams(mail).toString());
     }
 
     @Test
     public void givenContent_whenCreatingMailBody_thenReturnJsonBody() throws JSONException {
         String expectedValue = "[{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"}]";
 
-        Map<String, List<String>> map = new HashMap<>();
-        map.put(TYPE_PLAIN, Collections.singletonList(CONTENT_BODY));
+        Map<String, String> map = new HashMap<>();
+        map.put(TYPE_PLAIN, CONTENT_BODY);
         when(mail.getContent()).thenReturn(map);
 
         assertEquals(expectedValue, getContentParams(mail).toString());
     }
 
     @Test
-    public void givenListOfContents_whenCreatingMailBody_thenReturnJsonBody() throws JSONException {
-        String expectedValue = "[{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"}," +
-                "{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"}]";
+    public void givenContentsWithPlainTypeThenHtmlType_whenCreatingMailBody_thenReturnJsonBodyInThatOrder() throws JSONException {
+        String expectedValue = "[{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"}," + "{\"type\":\"text/html\",\"value\":\"" + CONTENT_BODY  + "\"}]";
 
-        Map<String, List<String>> map = new HashMap<>();
-        map.put(TYPE_PLAIN, Arrays.asList(CONTENT_BODY, CONTENT_BODY));
+        Map<String, String> map = new HashMap<>();
+        map.put(TYPE_PLAIN, CONTENT_BODY);
+        map.put(TYPE_HTML, CONTENT_BODY);
         when(mail.getContent()).thenReturn(map);
 
         assertEquals(expectedValue, getContentParams(mail).toString());
     }
 
     @Test
-    public void givenListOfContentsWithDifferentTypes_whenCreatingMailBody_thenReturnJsonBody() throws JSONException {
-        String expectedValue = "[{\"type\":\"text/html\",\"value\":\"" + CONTENT_BODY + "\"}," +
-                "{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"}]";
+    public void givenContentsWithHtmlTypeThenPlainType_whenCreatingMailBody_thenReturnJsonBodyInCorrectOrder() throws JSONException {
+        String expectedValue = "[{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"}," + "{\"type\":\"text/html\",\"value\":\"" + CONTENT_BODY  + "\"}]";
 
-        Map<String, List<String>> map = new HashMap<>();
-        map.put(TYPE_PLAIN, Collections.singletonList(CONTENT_BODY));
-        map.put(TYPE_HTML, Collections.singletonList(CONTENT_BODY));
+        Map<String, String> map = new HashMap<>();
+        map.put(TYPE_HTML, CONTENT_BODY);
+        map.put(TYPE_PLAIN, CONTENT_BODY);
         when(mail.getContent()).thenReturn(map);
 
         assertEquals(expectedValue, getContentParams(mail).toString());
     }
 
     @Test
-    public void update_me() {
+    public void xx() {
+        SendGridMail mail = new SendGridMail();
+        String cat1 = "o6QmbBaW4vxmlJLEFWoQxQvH9ozsTiNbsYui31SqadOKHK1XyUGkIRkjRjW6HksGxfqTOJfo2o5elaPMi6FNiwZ2l4ISzohZ2aEJ4M2TBmAvwUcCzVhcvLcyHVUAd5NbOomBVnv4gGmevRisTzoqrTMbAjVcEBvaWzm7l7WT1HlGrYR7IoLSr94nR9B3c91nqJliN6APMsVi1g7HTLj6HvVCkCKqm5S7wJbIr9ZeuiJ1JnG0W1k0XXRHfY28FuBp";
+        mail.addCategory(cat1);
+//        when(mail.getCategories()).thenReturn(Collections.singletonList(""));
+//        getCategories(mail);
+        System.out.println(mail.getCategories());
+    }
+
+    @Test
+    public void givenMultipleMailParameters_whenCreatingMailBody_thenReturnJsonBody() throws IOException {
         Map<String, String> toMap = new HashMap<>();
         toMap.put("john.doe@example.com", "John Doe");
         toMap.put("kate.green@example.com", "Kate Green");
         toMap.put("will.smith@example.com", "Will Smith");
         when(mail.getTo()).thenReturn(toMap);
+
         Map<String, String> fromMap = new HashMap<>();
         fromMap.put("john.doe@example.com", "John Doe");
         when(mail.getFrom()).thenReturn(fromMap);
+
         when(mail.getSubject()).thenReturn("Mail subject");
-        Map<String, List<String>> contentMap = new HashMap<>();
-        contentMap.put("text/plain", Arrays.asList("Content body 1", "Content body 2"));
+
+        Map<String, String> contentMap = new HashMap<>();
+        contentMap.put(TYPE_PLAIN, CONTENT_BODY);
+        contentMap.put(TYPE_HTML, CONTENT_BODY);
         when(mail.getContent()).thenReturn(contentMap);
 
-        System.out.println(create(mail).getBody());
+        when(mail.getTemplateId()).thenReturn("733ba07f-ead1-41fc-933a-3976baa23716");
+
+        Map<String, String> replyMap = new HashMap<>();
+        replyMap.put("no-reply@email.com", "No reply");
+        when(mail.getReplyTo()).thenReturn(replyMap);
+
+        assertEquals(parseJsonFile("/json/email"), create(mail).getBody().toString());
     }
 
-    private String parseEmails(String file) throws IOException {
+    private String parseJsonFile(String file) throws IOException {
         InputStream inputStream = getClass().getResourceAsStream(file);
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
