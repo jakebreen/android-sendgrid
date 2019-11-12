@@ -3,6 +3,7 @@ package uk.co.jakebreen.sendgridandroid;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import uk.co.jakebreen.sendgridandroid.SendGridMail.Attachment;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,19 +15,19 @@ class SendGridMailBody {
     private static final String BODY_PERSONALIZATIONS = "personalizations";
     private static final String BODY_TO = "to";
     private static final String BODY_FROM = "from";
-    private static final String BODY_CC = "cc";
-    private static final String BODY_BCC = "bcc";
     private static final String BODY_SUBJECT = "subject";
     private static final String BODY_CONTENT = "content";
     private static final String BODY_TEMPLATE_ID = "template_id";
     private static final String BODY_REPLY_TO = "reply_to";
-    private static final String BODY_CATEGORIES = "categories";
     private static final String BODY_SEND_AT = "send_at";
+    private static final String BODY_ATTACHMENTS = "attachments";
 
     private static final String PARAMS_EMAIL = "email";
     private static final String PARAMS_NAME = "name";
     private static final String PARAMS_CONTENT_TYPE = "type";
     private static final String PARAMS_CONTENT_VALUE = "value";
+    private static final String PARAMS_ATTACHMENT_CONTENT = "content";
+    private static final String PARAMS_ATTACHMENT_FILENAME = "filename";
 
 
     private final JSONObject body;
@@ -44,10 +45,6 @@ class SendGridMailBody {
         try {
             JSONArray personalization = new JSONArray();
             personalization.put(getToParams(mail));
-            if (!mail.getCc().isEmpty())
-                personalization.put(getCcParams(mail));
-            if (!mail.getBcc().isEmpty())
-                personalization.put(getBccParams(mail));
             parent.put(BODY_PERSONALIZATIONS, personalization);
             parent.put(BODY_FROM, getFromParams(mail));
             parent.put(BODY_SUBJECT, getSubjectParams(mail));
@@ -56,10 +53,10 @@ class SendGridMailBody {
                 parent.put(BODY_TEMPLATE_ID, getTemplateId(mail));
             if (!mail.getReplyTo().isEmpty())
                 parent.put(BODY_REPLY_TO, getReplyToParams(mail));
-            if (!mail.getCategories().isEmpty())
-                parent.put(BODY_CATEGORIES, getCategories(mail));
             if (mail.getSendAt() != 0)
                 parent.put(BODY_SEND_AT, getSendAt(mail));
+            if (mail.getAttachments().size() > 0)
+                parent.put(BODY_ATTACHMENTS, getAttachments(mail));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -106,21 +103,9 @@ class SendGridMailBody {
         return mail.getTemplateId();
     }
 
-    static JSONObject getBccParams(SendGridMail mail) throws JSONException {
-        final JSONObject jsonObject = new JSONObject();
-        jsonObject.put(BODY_BCC, convertEmails(mail.getBcc()));
-        return jsonObject;
-    }
-
-    static JSONObject getCcParams(SendGridMail mail) throws JSONException {
-        final JSONObject jsonObject = new JSONObject();
-        jsonObject.put(BODY_CC, convertEmails(mail.getCc()));
-        return jsonObject;
-    }
-
     static JSONObject getToParams(SendGridMail mail) throws JSONException {
         final JSONObject jsonObject = new JSONObject();
-        jsonObject.put(BODY_TO, convertEmails(mail.getTo()));
+        jsonObject.put(BODY_TO, setEmails(mail.getTo()));
         return jsonObject;
     }
 
@@ -142,19 +127,22 @@ class SendGridMailBody {
         return jsonObject;
     }
 
-    static JSONArray getCategories(SendGridMail mail) {
-        final JSONArray jsonArray = new JSONArray();
-        for (String cat : mail.getCategories()) {
-            jsonArray.put(cat);
-        }
-        return jsonArray;
-    }
-
     static int getSendAt(SendGridMail mail) {
         return mail.getSendAt();
     }
 
-    private static JSONArray convertEmails(Map<String, String> emailMap) throws JSONException {
+    static JSONArray getAttachments(SendGridMail mail) throws JSONException {
+        final JSONArray jsonArray = new JSONArray();
+        for (Attachment attachment : mail.getAttachments()) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(PARAMS_ATTACHMENT_CONTENT, attachment.getContent());
+            jsonObject.put(PARAMS_ATTACHMENT_FILENAME, attachment.getFilename());
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray;
+    }
+
+    private static JSONArray setEmails(Map<String, String> emailMap) throws JSONException {
         int count = 0;
         final JSONArray jsonArray = new JSONArray();
         for (Entry<String, String> set : emailMap.entrySet()) {

@@ -10,8 +10,8 @@ ext {
 
     libraryDescription = 'A library utilising the SendGrid'
 
-//    siteUrl = 'https://github.com/PPartisan/RunDo'
-//    gitUrl = 'https://github.com/PPartisan/RunDo.git'
+    siteUrl = ''
+    gitUrl = ''
 
     libraryVersion = '1.0.5'
 
@@ -20,7 +20,7 @@ ext {
     developerEmail = 'jbreendev@gmail.com'
 
     licenseName = 'The MIT License (MIT)'
-//    licenseUrl = 'https://github.com/PPartisan/RunDoOld/blob/master/LICENSE.md'
+    licenseUrl = ''
     allLicenses = ["MIT"]
 }
 

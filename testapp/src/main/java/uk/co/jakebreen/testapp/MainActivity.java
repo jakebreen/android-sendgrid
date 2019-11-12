@@ -11,6 +11,8 @@ import io.reactivex.schedulers.Schedulers;
 import uk.co.jakebreen.sendgridandroid.SendGrid;
 import uk.co.jakebreen.sendgridandroid.SendGridMail;
 
+import java.io.*;
+
 public class MainActivity extends AppCompatActivity {
 
     private String SENDGRID_API_KEY = "***REMOVED***";
@@ -39,12 +41,16 @@ public class MainActivity extends AppCompatActivity {
         sendGridMail.setContent("Body content");
         sendGridMail.setSubject("Subject hello");
 
-        String cat1 = "o6QmbBaW4vxmlJLEFWoQxQvH9ozsTiNbsYui31SqadOKHK1XyUGkIRkjRjW6HksGxfqTOJfo2o5elaPMi6FNiwZ2l4ISzohZ2aEJ4M2TBmAvwUcCzVhcvLcyHVUAd5NbOomBVnv4gGmevRisTzoqrTMbAjVcEBvaWzm7l7WT1HlGrYR7IoLSr94nR9B3c91nqJliN6APMsVi1g7HTLj6HvVCkCKqm5S7wJbIr9ZeuiJ1JnG0W1k0XXRHfY28FuBp";
-        String cat2 = "cat 2";
-        String cat3 = "cat 3";
-        sendGridMail.addCategory(cat1);
-        sendGridMail.addCategory(cat2);
-        sendGridMail.addCategory(cat3);
+        sendGridMail.setTemplateId("d-06545327bbcc4cbfb84b5600c708e3d2");
+
+        InputStream inputStream = getResources().openRawResource(R.raw.ic_fatcat);
+
+        File file = new File("/home/breenj/apps/personal/SendgridAndroid/testapp/src/main/res/raw/ic_fatcat.png");
+
+//        byte bytes[] = new byte[(int) file.length()];
+//        BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
+//        DataInputStream dataInputStream = new DataInputStream(bufferedInputStream);
+//        dataInputStream.readFully(bytes);
 
         Single.fromCallable(sendGrid.send(sendGridMail))
                 .subscribeOn(Schedulers.io())

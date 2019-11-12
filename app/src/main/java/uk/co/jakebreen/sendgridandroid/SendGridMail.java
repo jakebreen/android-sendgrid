@@ -1,9 +1,13 @@
 package uk.co.jakebreen.sendgridandroid;
 
 import android.support.annotation.NonNull;
+import android.util.Base64;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SendGridMail {
 
@@ -12,15 +16,13 @@ public class SendGridMail {
     static final String TYPE_HTML = "text/html";
 
     private final Map<String, String> to = new HashMap<>();
-    private final Map<String, String> cc = new HashMap<>();
-    private final Map<String, String> bcc = new HashMap<>();
     private String subject;
     private final Map<String, String> content = new HashMap<>();
     private final Map<String, String> from = new HashMap<>();
     private final Map<String, String> replyTo = new HashMap<>();
     private String templateId;
-    private List<String> categories = new ArrayList<>();
     private int sendAt;
+    private List<Attachment> attachments = new ArrayList<>();
 
     public SendGridMail() { }
 
@@ -37,16 +39,6 @@ public class SendGridMail {
     public void setReplyTo(String email, @Nullable String name) {
         if (name == null) name = EMPTY;
         from.put(email, name);
-    }
-
-    public void addCc(String email, @Nullable String name) {
-        if (name == null) name = EMPTY;
-        cc.put(email, name);
-    }
-
-    public void addBcc(String email, @Nullable String name) {
-        if (name == null) name = EMPTY;
-        bcc.put(email, name);
     }
 
     public void setSubject(@NonNull String subject) {
@@ -68,27 +60,12 @@ public class SendGridMail {
         content.put(TYPE_HTML, body);
     }
 
-    public void addCategory(String category) {
-        if (categories.size() <= 10) {
-            category = category.substring(0, Math.min(category.length(), 255));
-            categories.add(category);
-        }
-    }
-
     public void setSendAt(int sendAt) {
         this.sendAt = sendAt;
     }
 
     Map<String, String> getTo() {
         return to;
-    }
-
-    Map<String, String> getCc() {
-        return cc;
-    }
-
-    Map<String, String> getBcc() {
-        return bcc;
     }
 
     String getSubject() {
@@ -111,11 +88,35 @@ public class SendGridMail {
         return templateId;
     }
 
-    List<String> getCategories() {
-        return categories;
-    }
-
     int getSendAt() {
         return sendAt;
+    }
+
+    void addAttachment(String content, String filename) {
+        attachments.add(new Attachment(content, filename));
+    }
+
+    List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    class Attachment {
+
+        private final String content;
+        private final String filename;
+
+        Attachment(String content, String filename) {
+            this.content = Base64.encodeToString(content.getBytes(), Base64.DEFAULT);
+            this.filename = filename;
+        }
+
+        String getContent() {
+            return content;
+        }
+
+        String getFilename() {
+            return filename;
+        }
+
     }
 }
