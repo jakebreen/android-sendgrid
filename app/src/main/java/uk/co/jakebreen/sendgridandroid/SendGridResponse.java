@@ -1,6 +1,6 @@
 package uk.co.jakebreen.sendgridandroid;
 
-import org.jetbrains.annotations.Nullable;
+import android.support.annotation.Nullable;
 
 public class SendGridResponse {
 

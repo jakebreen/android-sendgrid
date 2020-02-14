@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 
 ext {
     bintrayRepo = 'maven'
@@ -8,20 +10,20 @@ ext {
     libraryName = 'SendGridAndroid'
     artifact = 'sendgridandroid'
 
-    libraryDescription = 'A library utilising the SendGrid'
+    libraryDescription = 'An easy to use Android library utilising the SendGrid v3 API '
 
-    siteUrl = ''
-    gitUrl = ''
+    siteUrl = 'https://github.com/Jakebreen/SendgridAndroid'
+    gitUrl = 'https://github.com/Jakebreen/SendgridAndroid.git'
 
-    libraryVersion = '1.0.5'
+    libraryVersion = '0.0.1'
 
-    developerId = '***REMOVED***'
+    developerId = 'jbreen'
     developerName = 'Jake Breen'
     developerEmail = 'jbreendev@gmail.com'
 
-    licenseName = 'The MIT License (MIT)'
-    licenseUrl = ''
-    allLicenses = ["MIT"]
+    licenseName = 'Apache 2.0'
+    licenseUrl = 'https://github.com/hihi-dev/android-twilio-sms/blob/LICENSE.md'
+    allLicenses = ["Apache 2.0"]
 }
 
 android {
@@ -30,7 +32,6 @@ android {
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -55,7 +56,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:28.0.0'
 
     testImplementation 'junit:junit:4.12'

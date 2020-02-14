@@ -1,8 +1,7 @@
 package uk.co.jakebreen.sendgridandroid;
 
 import android.support.annotation.NonNull;
-
-import org.jetbrains.annotations.Nullable;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -96,7 +95,7 @@ public class SendGridMail {
     }
 
     public void addAttachment(File file) {
-        attachments.add(new Attachment(file));
+        if (file.canRead() && file.exists() && file.isFile()) attachments.add(new Attachment(file));
     }
 
     List<Attachment> getAttachments() {
