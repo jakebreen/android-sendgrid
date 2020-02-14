@@ -3,16 +3,19 @@ package uk.co.jakebreen.sendgridandroid;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import uk.co.jakebreen.sendgridandroid.SendGridMail.Attachment;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static uk.co.jakebreen.sendgridandroid.SendGridMail.*;
+import uk.co.jakebreen.sendgridandroid.SendGridMail.Attachment;
+
+import static uk.co.jakebreen.sendgridandroid.SendGridMail.EMPTY;
+import static uk.co.jakebreen.sendgridandroid.SendGridMail.TYPE_HTML;
+import static uk.co.jakebreen.sendgridandroid.SendGridMail.TYPE_PLAIN;
 
 class SendGridMailBody {
 
-    private static final String BODY_PERSONALIZATIONS = "personalizations";
+    private static final String BODY_PERSONALISATIONS = "personalizations";
     private static final String BODY_TO = "to";
     private static final String BODY_FROM = "from";
     private static final String BODY_SUBJECT = "subject";
@@ -45,7 +48,7 @@ class SendGridMailBody {
         try {
             JSONArray personalization = new JSONArray();
             personalization.put(getToParams(mail));
-            parent.put(BODY_PERSONALIZATIONS, personalization);
+            parent.put(BODY_PERSONALISATIONS, personalization);
             parent.put(BODY_FROM, getFromParams(mail));
             parent.put(BODY_SUBJECT, getSubjectParams(mail));
             parent.put(BODY_CONTENT, getContentParams(mail));

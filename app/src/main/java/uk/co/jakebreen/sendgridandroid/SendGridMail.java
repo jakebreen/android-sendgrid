@@ -1,13 +1,16 @@
 package uk.co.jakebreen.sendgridandroid;
 
 import android.support.annotation.NonNull;
-import android.util.Base64;
+
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static uk.co.jakebreen.sendgridandroid.FileEncoder.encodeFileToBase64;
 
 public class SendGridMail {
 
@@ -92,8 +95,8 @@ public class SendGridMail {
         return sendAt;
     }
 
-    void addAttachment(String content, String filename) {
-        attachments.add(new Attachment(content, filename));
+    public void addAttachment(File file) {
+        attachments.add(new Attachment(file));
     }
 
     List<Attachment> getAttachments() {
@@ -105,9 +108,9 @@ public class SendGridMail {
         private final String content;
         private final String filename;
 
-        Attachment(String content, String filename) {
-            this.content = Base64.encodeToString(content.getBytes(), Base64.DEFAULT);
-            this.filename = filename;
+        Attachment(File file) {
+            this.content = encodeFileToBase64(file);
+            this.filename = file.getName();
         }
 
         String getContent() {

@@ -7,12 +7,12 @@ public class SendGridResponse {
     private final int code;
     private final String errorMessage;
 
-    SendGridResponse(int code, @Nullable String errorMessage) {
+    private SendGridResponse(int code, @Nullable String errorMessage) {
         this.code = code;
         this.errorMessage = errorMessage;
     }
 
-    static SendGridResponse create(int code, String errorMessage) {
+    private static SendGridResponse create(int code, String errorMessage) {
         return new SendGridResponse(code, errorMessage);
     }
 
