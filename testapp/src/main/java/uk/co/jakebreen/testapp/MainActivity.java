@@ -16,8 +16,6 @@ import uk.co.jakebreen.sendgridandroid.SendGridMail;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String SENDGRID_API_KEY = "***REMOVED***";
-
     private Button btnSend;
     private SendGrid sendGrid;
 
@@ -27,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnSend = findViewById(R.id.btn_send_mail);
-        sendGrid = SendGrid.create(SENDGRID_API_KEY);
+        sendGrid = SendGrid.create(BuildConfig.SENDGRID_APIKEY);
         btnSend.setOnClickListener(v -> sendMail());
     }
 

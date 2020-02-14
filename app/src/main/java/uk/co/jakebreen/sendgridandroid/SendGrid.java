@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 public class SendGrid {
 
     private static final String MAIL_URL = "mail/send";
+
     private String credentials;
     private SendGridCall api;
 
