@@ -136,7 +136,7 @@ class SendGridMailBody {
 
     static JSONArray getAttachments(SendGridMail mail) throws JSONException {
         final JSONArray jsonArray = new JSONArray();
-        for (Attachment attachment : mail.getAttachments()) {
+        for (Attachment attachment : mail.getFileAttachments()) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put(PARAMS_ATTACHMENT_CONTENT, attachment.getContent());
             jsonObject.put(PARAMS_ATTACHMENT_FILENAME, attachment.getFilename());

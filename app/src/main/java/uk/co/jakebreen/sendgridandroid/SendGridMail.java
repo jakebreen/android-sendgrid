@@ -28,42 +28,123 @@ public class SendGridMail {
 
     public SendGridMail() { }
 
-    public void addTo(String email, @Nullable String name) {
+    /**
+     * Add a recipient up to a maximum of 1000 recipients.
+     * Email address must be specified and an optional name of person or company
+     * that is receiving this mail.
+     *
+     * @param email the recipient's email address
+     * @param name name of person or company that is receiving this mail
+     *
+     */
+    public void addTo(@NonNull String email, @Nullable String name) {
+        if (to.size() >= 1000) return;
+
         if (name == null) name = EMPTY;
         to.put(email, name);
     }
 
-    public void setFrom(String email, @Nullable String name) {
-        if (name == null) name = EMPTY;
+    /**
+     * Provide the senders email address and optional name or company that is
+     * sending this mail.
+     *
+     * @param email email of person or company that is sending this mail
+     * @param name name of person or company that is sending this mail
+     */
+    public void setFrom(@NonNull String email, @Nullable String name) {
+        if (name == null)
+            name = EMPTY;
         from.put(email, name);
     }
 
-    public void setReplyTo(String email, @Nullable String name) {
-        if (name == null) name = EMPTY;
+    /**
+     * The name of the person or company that is sending the email.
+     *
+     * @param email email of person or company that is sending this mail
+     * @param name name of person or company that is sending this mail
+     */
+    public void setReplyTo(@NonNull String email, @Nullable String name) {
+        if (name == null)
+            name = EMPTY;
         from.put(email, name);
     }
 
+    /**
+     * The subject matter of your email.
+     *
+     * @param subject subject of your email
+     */
     public void setSubject(@NonNull String subject) {
-        if (subject.length() == 0) subject = " ";
+        if (subject.length() == 0)
+            subject = " ";
         this.subject = subject;
     }
 
+    /**
+     * The id of a template that you would like to use.
+     *
+     * @param templateId the id of your designated template
+     */
     public void setTemplateId(@NonNull String templateId) {
         this.templateId = templateId;
     }
 
+    /**
+     * Add a plain text body to your email using Content-Type: "text/plain".
+     *
+     * @param body the body of your email
+     */
     public void setContent(@NonNull String body) {
-        if (body.length() == 0) body = " ";
+        if (body.length() == 0)
+            body = " ";
         content.put(TYPE_PLAIN, body);
     }
 
+    /**
+     * Add a HTML body to your email using Content-Type: "text/html".
+     *
+     * @param body the body of your email
+     */
     public void setHtmlContent(@NonNull String body) {
-        if (body.length() == 0) body = " ";
+        if (body.length() == 0)
+            body = " ";
         content.put(TYPE_HTML, body);
     }
 
+    /**
+     * A unix timestamp allowing you to specify when you want your email to be delivered.
+     *
+     * @param sendAt the unix timestamp of when your email should be sent
+     */
     public void setSendAt(int sendAt) {
-        this.sendAt = sendAt;
+        if (sendAt > System.currentTimeMillis() / 1000L)
+            this.sendAt = sendAt;
+    }
+
+    /**
+     * Add an attachment to the email, up to a maximum of 10. Provide the File
+     * of the desired content to be attached.
+     *
+     * @param file the content to be attached
+     */
+    public void addAttachment(@NonNull File file) {
+        if (attachments.size() >= 10)
+            return;
+        if (file.canRead() && file.exists() && file.isFile())
+            attachments.add(new Attachment(file));
+    }
+
+    /**
+     * Returns a list of attached file names.
+     *
+     * @return list of file names
+     */
+    public List<String> getAttachments() {
+        final List<String> fileNames = new ArrayList<>();
+        for (Attachment a : attachments) {
+            fileNames.add(a.filename);
+        }
+        return fileNames;
     }
 
     Map<String, String> getTo() {
@@ -94,16 +175,11 @@ public class SendGridMail {
         return sendAt;
     }
 
-    public void addAttachment(File file) {
-        if (file.canRead() && file.exists() && file.isFile()) attachments.add(new Attachment(file));
-    }
-
-    List<Attachment> getAttachments() {
+    List<Attachment> getFileAttachments() {
         return attachments;
     }
 
     class Attachment {
-
         private final String content;
         private final String filename;
 
@@ -119,6 +195,5 @@ public class SendGridMail {
         String getFilename() {
             return filename;
         }
-
     }
 }

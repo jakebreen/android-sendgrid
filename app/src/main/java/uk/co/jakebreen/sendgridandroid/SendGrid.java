@@ -16,10 +16,28 @@ public class SendGrid {
         api = new SendGridCall();
     }
 
+    /**
+     * Returns a SendGrid instance tied to your API key that is used
+     * for initiating mail send requests.
+     *
+     * @param apiKey your SendGrid API key
+     * @return the SendGrid instance tied to your API key
+     */
     public static SendGrid create(@NonNull String apiKey) {
         return new SendGrid(apiKey);
     }
 
+    /**
+     * API mail send request, provide with a {@link SendGridMail} and returns a Callable
+     * {@link SendGridResponse}.
+     *
+     * The response will contain a successful {@link SendGridResponse#isSuccessful()}
+     * state along with any associated error {@link SendGridResponse#getErrorMessage()}
+     * in the event on an unsuccessful response.
+     *
+     * @param mail the SendGridMail to send to the API
+     * @return the response generated from the API request
+     */
     public Callable<SendGridResponse> send(@NonNull SendGridMail mail) {
         return api.call(MAIL_URL, credentials, SendGridMailBody.create(mail));
     }
