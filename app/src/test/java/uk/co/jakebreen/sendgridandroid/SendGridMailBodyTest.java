@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static uk.co.jakebreen.sendgridandroid.SendGridMail.*;
@@ -34,9 +35,31 @@ public class SendGridMailBodyTest {
         map.put("john.doe@example.com", "John Doe");
         map.put("kate.green@example.com", "Kate Green");
         map.put("will.smith@example.com", "Will Smith");
-        when(mail.getTo()).thenReturn(map);
+        when(mail.getRecipients()).thenReturn(map);
 
         assertEquals(parseJsonFile("/json/emails_to"), getToParams(mail).toString());
+    }
+
+    @Test
+    public void givenListOfCcEmails_whenCreatingMailBody_thenReturnJsonBody() throws JSONException, IOException {
+        Map<String, String> map = new HashMap<>();
+        map.put("john.doe@example.com", "John Doe");
+        map.put("kate.green@example.com", "Kate Green");
+        map.put("will.smith@example.com", "Will Smith");
+        when(mail.getRecipientCarbonCopies()).thenReturn(map);
+
+        assertEquals(parseJsonFile("/json/emails_cc"), getCcParams(mail).toString());
+    }
+
+    @Test
+    public void givenListOfBccEmails_whenCreatingMailBody_thenReturnJsonBody() throws JSONException, IOException {
+        Map<String, String> map = new HashMap<>();
+        map.put("john.doe@example.com", "John Doe");
+        map.put("kate.green@example.com", "Kate Green");
+        map.put("will.smith@example.com", "Will Smith");
+        when(mail.getRecipientBlindCarbonCopies()).thenReturn(map);
+
+        assertEquals(parseJsonFile("/json/emails_bcc"), getBccParams(mail).toString());
     }
 
     @Test
@@ -45,7 +68,7 @@ public class SendGridMailBodyTest {
 
         Map<String, String> map = new HashMap<>();
         map.put("john.doe@example.com", EMPTY);
-        when(mail.getTo()).thenReturn(map);
+        when(mail.getRecipients()).thenReturn(map);
 
         assertEquals(expectedValue, getToParams(mail).toString());
     }
@@ -97,12 +120,28 @@ public class SendGridMailBodyTest {
     }
 
     @Test
+    public void givenAttachment_whenCreatingMailBody_thenReturnJsonBody() throws JSONException {
+        String expectedValue = "[{\"filename\":\"TestFile.txt\",\"content\":\"dgFAtXCDASfghjgj4\"}]";
+
+        SendGridMail.Attachment attachment = mock(SendGridMail.Attachment.class);
+        when(attachment.getContent()).thenReturn("dgFAtXCDASfghjgj4");
+        when(attachment.getFilename()).thenReturn("TestFile.txt");
+
+        List<SendGridMail.Attachment> map = new ArrayList<>();
+        map.add(attachment);
+
+        when(mail.getFileAttachments()).thenReturn(map);
+
+        assertEquals(expectedValue, getAttachments(mail).toString());
+    }
+
+    @Test
     public void givenMultipleMailParameters_whenCreatingMailBody_thenReturnJsonBody() throws IOException {
         Map<String, String> toMap = new HashMap<>();
         toMap.put("john.doe@example.com", "John Doe");
         toMap.put("kate.green@example.com", "Kate Green");
         toMap.put("will.smith@example.com", "Will Smith");
-        when(mail.getTo()).thenReturn(toMap);
+        when(mail.getRecipients()).thenReturn(toMap);
 
         Map<String, String> fromMap = new HashMap<>();
         fromMap.put("john.doe@example.com", "John Doe");

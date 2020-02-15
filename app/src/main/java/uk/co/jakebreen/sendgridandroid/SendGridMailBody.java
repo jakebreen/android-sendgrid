@@ -1,5 +1,7 @@
 package uk.co.jakebreen.sendgridandroid;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +19,8 @@ class SendGridMailBody {
 
     private static final String BODY_PERSONALISATIONS = "personalizations";
     private static final String BODY_TO = "to";
+    private static final String BODY_CC = "cc";
+    private static final String BODY_BCC = "bcc";
     private static final String BODY_FROM = "from";
     private static final String BODY_SUBJECT = "subject";
     private static final String BODY_CONTENT = "content";
@@ -48,6 +52,10 @@ class SendGridMailBody {
         try {
             JSONArray personalization = new JSONArray();
             personalization.put(getToParams(mail));
+            if (!mail.getRecipientCarbonCopies().isEmpty())
+                personalization.put(getCcParams(mail));
+            if (!mail.getRecipientBlindCarbonCopies().isEmpty())
+                personalization.put(getBccParams(mail));
             parent.put(BODY_PERSONALISATIONS, personalization);
             parent.put(BODY_FROM, getFromParams(mail));
             parent.put(BODY_SUBJECT, getSubjectParams(mail));
@@ -108,7 +116,19 @@ class SendGridMailBody {
 
     static JSONObject getToParams(SendGridMail mail) throws JSONException {
         final JSONObject jsonObject = new JSONObject();
-        jsonObject.put(BODY_TO, setEmails(mail.getTo()));
+        jsonObject.put(BODY_TO, setEmails(mail.getRecipients()));
+        return jsonObject;
+    }
+
+    static JSONObject getCcParams(SendGridMail mail) throws JSONException {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put(BODY_CC, setEmails(mail.getRecipientCarbonCopies()));
+        return jsonObject;
+    }
+
+    static JSONObject getBccParams(SendGridMail mail) throws JSONException {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put(BODY_BCC, setEmails(mail.getRecipientBlindCarbonCopies()));
         return jsonObject;
     }
 
@@ -137,6 +157,8 @@ class SendGridMailBody {
     static JSONArray getAttachments(SendGridMail mail) throws JSONException {
         final JSONArray jsonArray = new JSONArray();
         for (Attachment attachment : mail.getFileAttachments()) {
+            if (attachment.getContent().isEmpty())
+                continue;
             JSONObject jsonObject = new JSONObject();
             jsonObject.put(PARAMS_ATTACHMENT_CONTENT, attachment.getContent());
             jsonObject.put(PARAMS_ATTACHMENT_FILENAME, attachment.getFilename());
@@ -155,7 +177,7 @@ class SendGridMailBody {
             jsonArray.put(jsonObject);
 
             count ++;
-            if (count == 1000) break;
+            if (count >= 1000) break;
         }
         return jsonArray;
     }

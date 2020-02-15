@@ -1,5 +1,6 @@
 package uk.co.jakebreen.sendgridandroid;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.co.jakebreen.sendgridandroid.FileEncoder.encodeFileToBase64;
+import static uk.co.jakebreen.sendgridandroid.FileEncoder.getFileName;
 
 public class SendGridMail {
 
@@ -18,6 +20,8 @@ public class SendGridMail {
     static final String TYPE_HTML = "text/html";
 
     private final Map<String, String> to = new HashMap<>();
+    private final Map<String, String> cc = new HashMap<>();
+    private final Map<String, String> bcc = new HashMap<>();
     private String subject;
     private final Map<String, String> content = new HashMap<>();
     private final Map<String, String> from = new HashMap<>();
@@ -29,7 +33,7 @@ public class SendGridMail {
     public SendGridMail() { }
 
     /**
-     * Add a recipient up to a maximum of 1000 recipients.
+     * Add a new recipient up to a maximum of 1000 recipients.
      * Email address must be specified and an optional name of person or company
      * that is receiving this mail.
      *
@@ -37,11 +41,43 @@ public class SendGridMail {
      * @param name name of person or company that is receiving this mail
      *
      */
-    public void addTo(@NonNull String email, @Nullable String name) {
+    public void addRecipient(@NonNull String email, @Nullable String name) {
         if (to.size() >= 1000) return;
 
         if (name == null) name = EMPTY;
         to.put(email, name);
+    }
+
+    /**
+     * Add a new Carbon Copy recipient up to a maximum of 1000 recipients.
+     * Email address must be specified and an optional name of person or company
+     * that is receiving this mail.
+     *
+     * @param email the recipient's email address
+     * @param name name of person or company that is receiving this mail
+     *
+     */
+    public void addRecipientCarbonCopy(@NonNull String email, @Nullable String name) {
+        if (cc.size() >= 1000) return;
+
+        if (name == null) name = EMPTY;
+        cc.put(email, name);
+    }
+
+    /**
+     * Add a new Blind Carbon Copy recipient up to a maximum of 1000 recipients.
+     * Email address must be specified and an optional name of person or company
+     * that is receiving this mail.
+     *
+     * @param email the recipient's email address
+     * @param name name of person or company that is receiving this mail
+     *
+     */
+    public void addRecipientBlindCarbonCopy(@NonNull String email, @Nullable String name) {
+        if (bcc.size() >= 1000) return;
+
+        if (name == null) name = EMPTY;
+        bcc.put(email, name);
     }
 
     /**
@@ -81,7 +117,7 @@ public class SendGridMail {
     }
 
     /**
-     * The id of a template that you would like to use.
+     * The id of the template that this email should adhere to.
      *
      * @param templateId the id of your designated template
      */
@@ -122,8 +158,7 @@ public class SendGridMail {
     }
 
     /**
-     * Add an attachment to the email, up to a maximum of 10. Provide the File
-     * of the desired content to be attached.
+     * Add an attachment of type {@link File} to the email, up to a maximum of 10.
      *
      * @param file the content to be attached
      */
@@ -135,11 +170,22 @@ public class SendGridMail {
     }
 
     /**
+     * Add an attachment of type {@link Uri} to the email, up to a maximum of 10.
+     *
+     * @param uri the content to be attached
+     */
+    public void addAttachment(@NonNull Uri uri) {
+        if (attachments.size() >= 10)
+            return;
+        attachments.add(new Attachment(uri));
+    }
+
+    /**
      * Returns a list of attached file names.
      *
      * @return list of file names
      */
-    public List<String> getAttachments() {
+    List<String> getAttachments() {
         final List<String> fileNames = new ArrayList<>();
         for (Attachment a : attachments) {
             fileNames.add(a.filename);
@@ -147,8 +193,16 @@ public class SendGridMail {
         return fileNames;
     }
 
-    Map<String, String> getTo() {
+    Map<String, String> getRecipients() {
         return to;
+    }
+
+    Map<String, String> getRecipientCarbonCopies() {
+        return cc;
+    }
+
+    Map<String, String> getRecipientBlindCarbonCopies() {
+        return bcc;
     }
 
     String getSubject() {
@@ -186,6 +240,11 @@ public class SendGridMail {
         Attachment(File file) {
             this.content = encodeFileToBase64(file);
             this.filename = file.getName();
+        }
+
+        Attachment(Uri uri) {
+            this.content = encodeFileToBase64(uri);
+            this.filename = getFileName(uri);
         }
 
         String getContent() {
