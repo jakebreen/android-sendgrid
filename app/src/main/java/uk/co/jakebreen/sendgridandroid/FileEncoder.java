@@ -1,6 +1,5 @@
 package uk.co.jakebreen.sendgridandroid;
 
-import android.net.Uri;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 
@@ -12,12 +11,14 @@ import java.io.InputStream;
 
 class FileEncoder {
 
+    private static final int BYTE_BUFFER_SIZE = 4096;
+
     static String encodeFileToBase64(File file) {
         try {
             InputStream inputStream = null;
             inputStream = new FileInputStream(file.getAbsolutePath());
 
-            byte[] buffer = new byte[8192];
+            byte[] buffer = new byte[BYTE_BUFFER_SIZE];
             int bytesRead;
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             Base64OutputStream output64 = new Base64OutputStream(output, Base64.NO_WRAP);
@@ -31,20 +32,6 @@ class FileEncoder {
             e.printStackTrace();
             return "";
         }
-    }
-
-    static String encodeFileToBase64(Uri uri) {
-        File file = new File(uri.getPath());
-        final String[] split = file.getPath().split(":");
-
-        if (split.length >= 2)
-            return encodeFileToBase64(new File(split[1]));
-
-        return "";
-    }
-
-    static String getFileName(Uri uri) {
-        return new File(uri.getPath()).getName();
     }
 
 }

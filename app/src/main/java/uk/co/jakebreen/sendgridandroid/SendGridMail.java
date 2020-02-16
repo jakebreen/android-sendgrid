@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.co.jakebreen.sendgridandroid.FileEncoder.encodeFileToBase64;
-import static uk.co.jakebreen.sendgridandroid.FileEncoder.getFileName;
 
 public class SendGridMail {
 
@@ -174,11 +173,11 @@ public class SendGridMail {
      *
      * @param uri the content to be attached
      */
-    public void addAttachment(@NonNull Uri uri) {
-        if (attachments.size() >= 10)
-            return;
-        attachments.add(new Attachment(uri));
-    }
+//    public void addAttachment(@NonNull Context context, @NonNull Uri uri) {
+//        if (attachments.size() >= 10)
+//            return;
+//        attachments.add(new Attachment(context, uri));
+//    }
 
     /**
      * Returns a list of attached file names.
@@ -242,10 +241,10 @@ public class SendGridMail {
             this.filename = file.getName();
         }
 
-        Attachment(Uri uri) {
-            this.content = encodeFileToBase64(uri);
-            this.filename = getFileName(uri);
-        }
+//        Attachment(Context context, Uri uri) {
+//            this.content = encodeFileToBase64(context, uri);
+//            this.filename = getFileName(uri);
+//        }
 
         String getContent() {
             return content;

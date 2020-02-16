@@ -2,13 +2,15 @@ package uk.co.jakebreen.testapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,13 +32,16 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFERENCE_SUBJECT = "PREFERENCE_SUBJECT";
     private static final String PREFERENCE_CONTENT = "PREFERENCE_CONTENT";
 
-    private Button btnSend, btnAddAttachment;
+    private static final int REQUEST_CODE = 1;
+
+    private Button btnSend, btnAddAttachment, btnClearAttachments;
     private EditText etRecipientEmail, getEtRecipientName;
     private EditText etSenderEmail, getEtSenderName;
     private EditText etSubject, etContent;
+    private TextView tvAttachments;
 
     private SendGrid sendGrid;
-    private final List<Uri> attachments = new ArrayList<>();
+    private final List<File> attachments = new ArrayList<>();
     private Disposable disposable;
     private SharedPreferences sharedPreferences;
 
@@ -57,9 +62,12 @@ public class MainActivity extends AppCompatActivity {
         getEtSenderName = findViewById(R.id.et_senders_name);
         etSubject = findViewById(R.id.et_subject);
         etContent = findViewById(R.id.et_content);
+        tvAttachments = findViewById(R.id.tv_attachments);
+        btnClearAttachments = findViewById(R.id.btn_clear_attachments);
 
         btnSend.setOnClickListener(v -> sendMail());
         btnAddAttachment.setOnClickListener(v -> addAttachment());
+        btnClearAttachments.setOnClickListener(v -> clearAttachments());
 
         etRecipientEmail.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_EMAIL, ""));
         getEtRecipientName.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_NAME, ""));
@@ -67,6 +75,21 @@ public class MainActivity extends AppCompatActivity {
         getEtSenderName.setText(sharedPreferences.getString(PREFERENCE_SENDER_NAME, ""));
         etSubject.setText(sharedPreferences.getString(PREFERENCE_SUBJECT, ""));
         etContent.setText(sharedPreferences.getString(PREFERENCE_CONTENT, ""));
+        clearAttachments();
+    }
+
+    private void clearAttachments() {
+        attachments.clear();
+        setAttachmentCount();
+    }
+
+    private void setAttachmentCount() {
+        final int count = attachments.size();
+        tvAttachments.setText(String.format("%s Attachments", count));
+        if (count >= 10)
+            btnAddAttachment.setEnabled(false);
+        else
+            btnAddAttachment.setEnabled(true);
     }
 
     private void sendMail() {
@@ -89,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
         mail.setContent(content);
 
         if (!attachments.isEmpty())
-            for (Uri uri : attachments)
-                mail.addAttachment(uri);
+            for (File file : attachments)
+                mail.addAttachment(file);
 
         send(mail);
     }
@@ -113,12 +136,14 @@ public class MainActivity extends AppCompatActivity {
                     "Error " + response.getCode() + " while sending email: " + response.getErrorMessage(),
                     Toast.LENGTH_SHORT)
                     .show();
+
+        clearAttachments();
     }
 
     private void addAttachment() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     private void showMissingField() {
@@ -127,9 +152,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                attachments.add(data.getData());
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            try {
+                attachments.add(FileUtil.from(getApplicationContext(), data.getData()));
+                setAttachmentCount();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -137,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        disposable.dispose();
+        if (disposable != null) disposable.dispose();
     }
 
     @Override
