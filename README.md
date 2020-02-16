@@ -5,7 +5,9 @@ Use with maven: ```implementation 'uk.co.jakebreen.android-sendgrid:1.0.0'```
 
 # How to use
 Create an instance of the SendGrid library tied to your API key.
-```SendGrid create(@NonNull String apiKey)```
+```
+SendGrid create(@NonNull String apiKey)
+```
 
 Create a SendGridMail and provide the required attributes.
 ```
@@ -44,7 +46,7 @@ response.getErrorMessage()
 
 Additional SendGridMail fields that aren't required as a minimum to send an email
 ```
-mail.addAttachment(@NonNull File file)```
+mail.addAttachment(@NonNull File file)
 mail.addRecipientCarbonCopy(@NonNull String email, @Nullable String name)
 mail.addRecipientBlindCarbonCopy(@NonNull String email, @Nullable String name)
 mail.setReplyTo(@NonNull String email, @Nullable String name)
