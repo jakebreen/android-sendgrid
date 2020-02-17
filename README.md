@@ -6,7 +6,7 @@ Use with maven: ```implementation 'uk.co.jakebreen.android-sendgrid:1.0.0'```
 # How to use
 Create an instance of the SendGrid library tied to your API key.
 ```
-SendGrid create(@NonNull String apiKey)
+SendGrid sendGrid = SendGrid.create(@NonNull String apiKey)
 ```
 
 Create a SendGridMail and provide the required attributes.
