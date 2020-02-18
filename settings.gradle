@@ -1,1 +1,1 @@
-include ':androidsendgrid', ':testapp'
+include ':androidsendgrid'
