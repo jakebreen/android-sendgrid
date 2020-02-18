@@ -1,4 +1,4 @@
-package uk.co.jakebreen.testapp;
+package uk.co.jakebreen.sendgridandroid.testapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +21,8 @@ import io.reactivex.schedulers.Schedulers;
 import uk.co.jakebreen.sendgridandroid.SendGrid;
 import uk.co.jakebreen.sendgridandroid.SendGridMail;
 import uk.co.jakebreen.sendgridandroid.SendGridResponse;
+import uk.co.jakebreen.testapp.BuildConfig;
+import uk.co.jakebreen.testapp.R;
 
 public class MainActivity extends AppCompatActivity {
 

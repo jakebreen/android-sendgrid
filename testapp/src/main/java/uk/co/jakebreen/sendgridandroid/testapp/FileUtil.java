@@ -1,4 +1,4 @@
-package uk.co.jakebreen.testapp;
+package uk.co.jakebreen.sendgridandroid.testapp;
 
 import android.content.Context;
 import android.database.Cursor;
