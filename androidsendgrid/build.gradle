@@ -1,31 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
-
-ext {
-    bintrayRepo = 'AndroidSendgrid'
-    bintrayName = 'android-sendgrid'
-
-    publishedGroupId = 'uk.co.jakebreen'
-    libraryName = 'AndroidSendGrid'
-    artifact = 'android-sendgrid'
-
-    libraryDescription = 'An easy to use Android library utilising the SendGrid v3 API '
-
-    siteUrl = 'https://github.com/Jakebreen/SendgridAndroid'
-    gitUrl = 'https://github.com/Jakebreen/SendgridAndroid.git'
-
-    libraryVersion = '1.0.0'
-
-    developerId = 'jbreen'
-    developerName = 'Jake Breen'
-    developerEmail = 'jbreendev@gmail.com'
-    organization = ''
-
-    licenseName = 'Apache 2.0'
-    licenseUrl = 'https://github.com/hihi-dev/android-twilio-sms/blob/LICENSE.md'
-    allLicenses = ["Apache 2.0"]
-}
 
 android {
     compileSdkVersion 28
@@ -63,3 +36,5 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:2.23.0'
     testImplementation 'org.json:json:20140107'
 }
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

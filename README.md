@@ -1,7 +1,7 @@
 # android-sendgrid
 A simplified Android email library utilising SendGrid's v3 API that targets minSdkVersion 16.
 
-Use with maven: ```implementation 'uk.co.jakebreen.android-sendgrid:1.0.0'```
+Use with maven: ```implementation 'uk.co.jakebreen:android-sendgrid:1.0.0'```
 
 # How to use
 Create an instance of the SendGrid library tied to your API key.
