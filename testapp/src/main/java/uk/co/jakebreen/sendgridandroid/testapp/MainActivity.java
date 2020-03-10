@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,13 +116,17 @@ public class MainActivity extends AppCompatActivity {
         mail.setSubject(subject);
         mail.setContent(content);
 
-//        if (!attachments.isEmpty())
-//            for (File file : attachments)
-//                mail.addAttachment(file);
+        try {
+            if (!attachments.isEmpty())
+                for (File file : attachments)
+                    mail.addAttachment(file);
 
-        if (!uris.isEmpty())
-            for (Uri uri : uris)
-                mail.addAttachment(getApplicationContext(), uri);
+            if (!uris.isEmpty())
+                for (Uri uri : uris)
+                    mail.addAttachment(getApplicationContext(), uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         send(mail);
     }
@@ -162,9 +167,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             uris.add(data.getData());
-//            attachments.add(FileUtil.from(getApplicationContext(), data.getData()));
+//            attachments.add(getFileFromUri(data.getData()));
             setAttachmentCount();
         }
+    }
+
+    private File getFileFromUri(Uri uri) {
+        try {
+            return FileUtil.from(getApplicationContext(), uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new File("");
     }
 
     @Override

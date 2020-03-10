@@ -6,13 +6,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static uk.co.jakebreen.sendgridandroid.FileEncoder.encodeFileToBase64;
-import static uk.co.jakebreen.sendgridandroid.FileEncoder.getFileName;
+import static uk.co.jakebreen.sendgridandroid.FileEncoder.uriToFile;
+import static uk.co.jakebreen.sendgridandroid.SendGridMail.Attachment.isFile;
 
 public class SendGridMail {
 
@@ -160,10 +162,10 @@ public class SendGridMail {
      *
      * @param file the content to be attached
      */
-    public void addAttachment(@NonNull File file) {
+    public void addAttachment(@NonNull File file) throws IOException {
         if (attachments.size() >= 10)
             return;
-        if (file.canRead() && file.exists() && file.isFile())
+        if (isFile(file))
             attachments.add(new Attachment(file));
     }
 
@@ -172,10 +174,12 @@ public class SendGridMail {
      *
      * @param uri the content to be attached
      */
-    public void addAttachment(@NonNull Context context, @NonNull Uri uri) {
+    public void addAttachment(@NonNull Context context, @NonNull Uri uri) throws IOException {
         if (attachments.size() >= 10)
             return;
-        attachments.add(new Attachment(context, uri));
+        final File file = uriToFile(context, uri);
+        if (isFile(file))
+            attachments.add(new Attachment(file));
     }
 
     /**
@@ -231,18 +235,13 @@ public class SendGridMail {
         return attachments;
     }
 
-    class Attachment {
+    static class Attachment {
         private final String content;
         private final String filename;
 
-        Attachment(File file) {
+        Attachment(File file) throws IOException {
             this.content = encodeFileToBase64(file);
             this.filename = file.getName();
-        }
-
-        Attachment(Context context, Uri uri) {
-            this.content = encodeFileToBase64(context, uri);
-            this.filename = getFileName(context, uri);
         }
 
         String getContent() {
@@ -251,6 +250,10 @@ public class SendGridMail {
 
         String getFilename() {
             return filename;
+        }
+
+        static boolean isFile(File file) {
+            return (file != null && file.canRead() && file.exists() && file.isFile());
         }
     }
 }
