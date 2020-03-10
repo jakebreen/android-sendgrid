@@ -2,6 +2,7 @@ package uk.co.jakebreen.sendgridandroid.testapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SendGrid sendGrid;
     private final List<File> attachments = new ArrayList<>();
+    private final List<Uri> uris = new ArrayList<>();
     private Disposable disposable;
     private SharedPreferences sharedPreferences;
 
@@ -82,11 +84,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void clearAttachments() {
         attachments.clear();
+        uris.clear();
         setAttachmentCount();
     }
 
     private void setAttachmentCount() {
-        final int count = attachments.size();
+        final int count = attachments.size() + uris.size();
         tvAttachments.setText(String.format("%s Attachments", count));
         if (count >= 10)
             btnAddAttachment.setEnabled(false);
@@ -113,9 +116,17 @@ public class MainActivity extends AppCompatActivity {
         mail.setSubject(subject);
         mail.setContent(content);
 
-        if (!attachments.isEmpty())
-            for (File file : attachments)
-                mail.addAttachment(file);
+        try {
+            if (!attachments.isEmpty())
+                for (File file : attachments)
+                    mail.addAttachment(file);
+
+            if (!uris.isEmpty())
+                for (Uri uri : uris)
+                    mail.addAttachment(getApplicationContext(), uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         send(mail);
     }
@@ -155,13 +166,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            try {
-                attachments.add(FileUtil.from(getApplicationContext(), data.getData()));
-                setAttachmentCount();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            uris.add(data.getData());
+//            attachments.add(getFileFromUri(data.getData()));
+            setAttachmentCount();
         }
+    }
+
+    private File getFileFromUri(Uri uri) {
+        try {
+            return FileUtil.from(getApplicationContext(), uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new File("");
     }
 
     @Override

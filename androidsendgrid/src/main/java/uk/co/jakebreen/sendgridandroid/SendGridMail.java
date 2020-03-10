@@ -1,16 +1,20 @@
 package uk.co.jakebreen.sendgridandroid;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static uk.co.jakebreen.sendgridandroid.FileEncoder.encodeFileToBase64;
+import static uk.co.jakebreen.sendgridandroid.FileEncoder.uriToFile;
+import static uk.co.jakebreen.sendgridandroid.SendGridMail.Attachment.isFile;
 
 public class SendGridMail {
 
@@ -37,8 +41,7 @@ public class SendGridMail {
      * that is receiving this mail.
      *
      * @param email the recipient's email address
-     * @param name name of person or company that is receiving this mail
-     *
+     * @param name  name of person or company that is receiving this mail
      */
     public void addRecipient(@NonNull String email, @Nullable String name) {
         if (to.size() >= 1000) return;
@@ -53,8 +56,7 @@ public class SendGridMail {
      * that is receiving this mail.
      *
      * @param email the recipient's email address
-     * @param name name of person or company that is receiving this mail
-     *
+     * @param name  name of person or company that is receiving this mail
      */
     public void addRecipientCarbonCopy(@NonNull String email, @Nullable String name) {
         if (cc.size() >= 1000) return;
@@ -69,8 +71,7 @@ public class SendGridMail {
      * that is receiving this mail.
      *
      * @param email the recipient's email address
-     * @param name name of person or company that is receiving this mail
-     *
+     * @param name  name of person or company that is receiving this mail
      */
     public void addRecipientBlindCarbonCopy(@NonNull String email, @Nullable String name) {
         if (bcc.size() >= 1000) return;
@@ -84,7 +85,7 @@ public class SendGridMail {
      * sending this mail.
      *
      * @param email email of person or company that is sending this mail
-     * @param name name of person or company that is sending this mail
+     * @param name  name of person or company that is sending this mail
      */
     public void setFrom(@NonNull String email, @Nullable String name) {
         if (name == null)
@@ -96,7 +97,7 @@ public class SendGridMail {
      * The name of the person or company that is sending the email.
      *
      * @param email email of person or company that is sending this mail
-     * @param name name of person or company that is sending this mail
+     * @param name  name of person or company that is sending this mail
      */
     public void setReplyTo(@NonNull String email, @Nullable String name) {
         if (name == null)
@@ -161,10 +162,10 @@ public class SendGridMail {
      *
      * @param file the content to be attached
      */
-    public void addAttachment(@NonNull File file) {
+    public void addAttachment(@NonNull File file) throws IOException {
         if (attachments.size() >= 10)
             return;
-        if (file.canRead() && file.exists() && file.isFile())
+        if (isFile(file))
             attachments.add(new Attachment(file));
     }
 
@@ -173,11 +174,13 @@ public class SendGridMail {
      *
      * @param uri the content to be attached
      */
-//    public void addAttachment(@NonNull Context context, @NonNull Uri uri) {
-//        if (attachments.size() >= 10)
-//            return;
-//        attachments.add(new Attachment(context, uri));
-//    }
+    public void addAttachment(@NonNull Context context, @NonNull Uri uri) throws IOException {
+        if (attachments.size() >= 10)
+            return;
+        final File file = uriToFile(context, uri);
+        if (isFile(file))
+            attachments.add(new Attachment(file));
+    }
 
     /**
      * Returns a list of attached file names.
@@ -232,19 +235,14 @@ public class SendGridMail {
         return attachments;
     }
 
-    class Attachment {
+    static class Attachment {
         private final String content;
         private final String filename;
 
-        Attachment(File file) {
+        Attachment(File file) throws IOException {
             this.content = encodeFileToBase64(file);
             this.filename = file.getName();
         }
-
-//        Attachment(Context context, Uri uri) {
-//            this.content = encodeFileToBase64(context, uri);
-//            this.filename = getFileName(uri);
-//        }
 
         String getContent() {
             return content;
@@ -252,6 +250,10 @@ public class SendGridMail {
 
         String getFilename() {
             return filename;
+        }
+
+        static boolean isFile(File file) {
+            return (file != null && file.canRead() && file.exists() && file.isFile());
         }
     }
 }

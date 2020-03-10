@@ -1,7 +1,5 @@
 package uk.co.jakebreen.sendgridandroid;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

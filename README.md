@@ -18,7 +18,7 @@ mail.setSubject(@NonNull String subject)
 mail.setContent(@NonNull String body)
 ```
 
-Send a mail with the libraries SendTask.
+Send a mail with the library's SendTask.
 ```
 SendTask task = new SendTask(sendGrid, mail);
 SendGridResponse response = task.execute().get();
@@ -44,9 +44,10 @@ response.getCode()
 response.getErrorMessage()
 ```
 
-Additional SendGridMail fields that aren't required as a minimum to send an email
+Additional SendGridMail methods that aren't required to send an email
 ```
 mail.addAttachment(@NonNull File file)
+mail.addAttachment(@NonNull Uri uri)
 mail.addRecipientCarbonCopy(@NonNull String email, @Nullable String name)
 mail.addRecipientBlindCarbonCopy(@NonNull String email, @Nullable String name)
 mail.setReplyTo(@NonNull String email, @Nullable String name)
