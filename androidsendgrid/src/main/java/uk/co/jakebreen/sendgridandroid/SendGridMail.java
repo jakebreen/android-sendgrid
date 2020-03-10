@@ -1,5 +1,6 @@
 package uk.co.jakebreen.sendgridandroid;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.co.jakebreen.sendgridandroid.FileEncoder.encodeFileToBase64;
+import static uk.co.jakebreen.sendgridandroid.FileEncoder.getFileName;
 
 public class SendGridMail {
 
@@ -37,8 +39,7 @@ public class SendGridMail {
      * that is receiving this mail.
      *
      * @param email the recipient's email address
-     * @param name name of person or company that is receiving this mail
-     *
+     * @param name  name of person or company that is receiving this mail
      */
     public void addRecipient(@NonNull String email, @Nullable String name) {
         if (to.size() >= 1000) return;
@@ -53,8 +54,7 @@ public class SendGridMail {
      * that is receiving this mail.
      *
      * @param email the recipient's email address
-     * @param name name of person or company that is receiving this mail
-     *
+     * @param name  name of person or company that is receiving this mail
      */
     public void addRecipientCarbonCopy(@NonNull String email, @Nullable String name) {
         if (cc.size() >= 1000) return;
@@ -69,8 +69,7 @@ public class SendGridMail {
      * that is receiving this mail.
      *
      * @param email the recipient's email address
-     * @param name name of person or company that is receiving this mail
-     *
+     * @param name  name of person or company that is receiving this mail
      */
     public void addRecipientBlindCarbonCopy(@NonNull String email, @Nullable String name) {
         if (bcc.size() >= 1000) return;
@@ -84,7 +83,7 @@ public class SendGridMail {
      * sending this mail.
      *
      * @param email email of person or company that is sending this mail
-     * @param name name of person or company that is sending this mail
+     * @param name  name of person or company that is sending this mail
      */
     public void setFrom(@NonNull String email, @Nullable String name) {
         if (name == null)
@@ -96,7 +95,7 @@ public class SendGridMail {
      * The name of the person or company that is sending the email.
      *
      * @param email email of person or company that is sending this mail
-     * @param name name of person or company that is sending this mail
+     * @param name  name of person or company that is sending this mail
      */
     public void setReplyTo(@NonNull String email, @Nullable String name) {
         if (name == null)
@@ -173,11 +172,11 @@ public class SendGridMail {
      *
      * @param uri the content to be attached
      */
-//    public void addAttachment(@NonNull Context context, @NonNull Uri uri) {
-//        if (attachments.size() >= 10)
-//            return;
-//        attachments.add(new Attachment(context, uri));
-//    }
+    public void addAttachment(@NonNull Context context, @NonNull Uri uri) {
+        if (attachments.size() >= 10)
+            return;
+        attachments.add(new Attachment(context, uri));
+    }
 
     /**
      * Returns a list of attached file names.
@@ -241,10 +240,10 @@ public class SendGridMail {
             this.filename = file.getName();
         }
 
-//        Attachment(Context context, Uri uri) {
-//            this.content = encodeFileToBase64(context, uri);
-//            this.filename = getFileName(uri);
-//        }
+        Attachment(Context context, Uri uri) {
+            this.content = encodeFileToBase64(context, uri);
+            this.filename = getFileName(context, uri);
+        }
 
         String getContent() {
             return content;
