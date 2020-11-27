@@ -2,8 +2,8 @@ package uk.co.jakebreen.sendgridandroid;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +29,7 @@ public class SendGridMail {
     private final Map<String, String> content = new HashMap<>();
     private final Map<String, String> from = new HashMap<>();
     private final Map<String, String> replyTo = new HashMap<>();
+    private final Map<String, Boolean> clickTracking = new HashMap<>();
     private String templateId;
     private int sendAt;
     private List<Attachment> attachments = new ArrayList<>();
@@ -182,6 +183,10 @@ public class SendGridMail {
             attachments.add(new Attachment(file));
     }
 
+    public void setClickTracking(@NonNull String name, @Nullable Boolean enabled) {
+        clickTracking.put(name, enabled);
+    }
+
     /**
      * Returns a list of attached file names.
      *
@@ -194,6 +199,8 @@ public class SendGridMail {
         }
         return fileNames;
     }
+
+    Map<String, Boolean> getClickTracking() { return clickTracking; }
 
     Map<String, String> getRecipients() {
         return to;

@@ -1,0 +1,28 @@
+{
+  "personalizations":[
+    {
+      "to":[
+        {
+          "name":"John Doe",
+          "email":"john.doe@example.com"
+        },
+        {
+          "name":"Will Smith",
+          "email":"will.smith@example.com"
+        },
+        {
+          "name":"Kate Green",
+          "email":"kate.green@example.com"
+        }
+      ]
+    }
+  ],
+  "tracking_settings":{
+    "click_tracking":{
+        "enable":false,
+        "enable_text":true
+    }
+  },
+  "from":{},
+  "content":[]
+}
