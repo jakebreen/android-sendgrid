@@ -1,6 +1,6 @@
 package uk.co.jakebreen.sendgridandroid;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.concurrent.Callable;
 
