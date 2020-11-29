@@ -1,21 +1,7 @@
 # android-sendgrid
 A simplified Android email library utilising SendGrid's v3 API that targets minSdkVersion 16.
 
-Use with jitpack.
-```
-allprojects {
-	repositories {
-		...
-		maven { url 'https://jitpack.io' }
-	}
-}
-```
- 
- ```
-dependencies {
-	implementation 'com.github.bitcoin-com:android-sendgrid:1.1.0'
-}
-```
+Use with maven central ```implementation 'uk.co.jakebreen:android-sendgrid:1.1.0'```
 
 # How to use
 Create an instance of the SendGrid library tied to your API key.

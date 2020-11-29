@@ -35,8 +35,6 @@ class SendGridMailBody {
     private static final String PARAMS_ATTACHMENT_CONTENT = "content";
     private static final String PARAMS_ATTACHMENT_FILENAME = "filename";
 
-    private static final String TRACKING_SETTINGS_CLICK_TRACKING = "click_tracking";
-
     private final JSONObject body;
 
     private SendGridMailBody(JSONObject body) {
@@ -68,11 +66,8 @@ class SendGridMailBody {
                 parent.put(BODY_SEND_AT, getSendAt(mail));
             if (mail.getAttachments().size() > 0)
                 parent.put(BODY_ATTACHMENTS, getAttachments(mail));
-            if (mail.getClickTracking().size() > 0) {
-                JSONObject trackingSettings = new JSONObject();
-                JSONObject clickTracking = getTrackingSettings(mail);
-                trackingSettings.put(TRACKING_SETTINGS_CLICK_TRACKING, clickTracking);
-                parent.put(BODY_TRACKING_SETTINGS, trackingSettings);
+            if (mail.getTrackingSettings().size() > 0) {
+                parent.put(BODY_TRACKING_SETTINGS, getTrackingSettings(mail));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -175,9 +170,12 @@ class SendGridMailBody {
 
     static JSONObject getTrackingSettings(SendGridMail mail) throws JSONException {
         final JSONObject jsonObject = new JSONObject();
-        for (Entry<String, Boolean> set : mail.getClickTracking().entrySet()) {
+        for (Entry<String, Map<String, Boolean>> set : mail.getTrackingSettings().entrySet()) {
+            System.out.println(set.getKey());
+            System.out.println(set.getValue());
             jsonObject.put(set.getKey(), set.getValue());
         }
+        System.out.println(jsonObject);
         return jsonObject;
     }
 

@@ -22,6 +22,11 @@ public class SendGridMail {
     static final String TYPE_PLAIN = "text/plain";
     static final String TYPE_HTML = "text/html";
 
+    static final String TRACKING_SETTING_CLICK_TRACKING = "click_tracking";
+    static final String TRACKING_SETTING_OPEN_TRACKING = "open_tracking";
+    static final String TRACKING_SETTING_SUBSCRIPTION_TRACKING = "subscription_tracking";
+    static final String TRACKING_SETTING_ENABLED = "enable";
+
     private final Map<String, String> to = new HashMap<>();
     private final Map<String, String> cc = new HashMap<>();
     private final Map<String, String> bcc = new HashMap<>();
@@ -29,7 +34,7 @@ public class SendGridMail {
     private final Map<String, String> content = new HashMap<>();
     private final Map<String, String> from = new HashMap<>();
     private final Map<String, String> replyTo = new HashMap<>();
-    private final Map<String, Boolean> clickTracking = new HashMap<>();
+    private final Map<String, Map<String, Boolean>> trackingSettings = new HashMap<>();
     private String templateId;
     private int sendAt;
     private List<Attachment> attachments = new ArrayList<>();
@@ -183,8 +188,34 @@ public class SendGridMail {
             attachments.add(new Attachment(file));
     }
 
-    public void setClickTracking(@NonNull String name, @Nullable Boolean enabled) {
-        clickTracking.put(name, enabled);
+    /**
+     * Allows you to track whether a recipient clicked a link in your email.
+     *
+     * @param enabled Indicates if this setting is enabled.
+     */
+    public void setClickTrackingEnabled(@NonNull Boolean enabled) {
+        trackingSettings.put(TRACKING_SETTING_CLICK_TRACKING, new HashMap<String, Boolean>() {{ put(TRACKING_SETTING_ENABLED, enabled); }});
+    }
+
+    /**
+     * Allows you to track whether the email was opened or not, but including a single pixel image
+     * in the body of the content. When the pixel is loaded, we can log that the email was opened.
+     *
+     * @param enabled Indicates if this setting is enabled.
+     */
+    public void setOpenTrackingEnabled(@NonNull Boolean enabled) {
+        trackingSettings.put(TRACKING_SETTING_OPEN_TRACKING, new HashMap<String, Boolean>() {{ put(TRACKING_SETTING_ENABLED, enabled); }});
+    }
+
+    /**
+     * Allows you to insert a subscription management link at the bottom of the text and html
+     * bodies of your email. If you would like to specify the location of the link within your
+     * email, you may use the substitution_tag.
+     *
+     * @param enabled Indicates if this setting is enabled.
+     */
+    public void setSubscriptionTrackingEnabled(@NonNull Boolean enabled) {
+        trackingSettings.put(TRACKING_SETTING_SUBSCRIPTION_TRACKING, new HashMap<String, Boolean>() {{ put(TRACKING_SETTING_ENABLED, enabled); }});
     }
 
     /**
@@ -200,7 +231,9 @@ public class SendGridMail {
         return fileNames;
     }
 
-    Map<String, Boolean> getClickTracking() { return clickTracking; }
+    Map<String, Map<String, Boolean>> getTrackingSettings() {
+        return trackingSettings;
+    }
 
     Map<String, String> getRecipients() {
         return to;

@@ -19,8 +19,13 @@
   ],
   "tracking_settings":{
     "click_tracking":{
-        "enable":false,
-        "enable_text":true
+        "enable":true
+    },
+    "subscription_tracking":{
+        "enable":true
+    },
+    "open_tracking":{
+        "enable":true
     }
   },
   "from":{},
