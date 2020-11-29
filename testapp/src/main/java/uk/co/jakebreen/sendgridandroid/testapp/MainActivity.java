@@ -4,11 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +23,6 @@ import io.reactivex.schedulers.Schedulers;
 import uk.co.jakebreen.sendgridandroid.SendGrid;
 import uk.co.jakebreen.sendgridandroid.SendGridMail;
 import uk.co.jakebreen.sendgridandroid.SendGridResponse;
-import uk.co.jakebreen.testapp.BuildConfig;
 import uk.co.jakebreen.testapp.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
 
-        sendGrid = SendGrid.create(BuildConfig.SENDGRID_APIKEY);
+        // Add API KEY
+        sendGrid = SendGrid.create("<API_KEY>");
 
         btnSend = findViewById(R.id.btn_send);
         btnAddAttachment = findViewById(R.id.btn_attachment);
@@ -165,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             uris.add(data.getData());
 //            attachments.add(getFileFromUri(data.getData()));

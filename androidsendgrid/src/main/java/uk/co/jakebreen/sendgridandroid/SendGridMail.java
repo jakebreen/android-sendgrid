@@ -158,7 +158,7 @@ public class SendGridMail {
      *
      * @param sendAt the unix timestamp of when your email should be sent
      */
-    public void setSendAt(int sendAt) {
+    public void setSendAt(@NonNull int sendAt) {
         if (sendAt > System.currentTimeMillis() / 1000L)
             this.sendAt = sendAt;
     }

@@ -1,7 +1,19 @@
 # android-sendgrid
 A simplified Android email library utilising SendGrid's v3 API that targets minSdkVersion 16.
 
-Use with maven central ```implementation 'uk.co.jakebreen:android-sendgrid:1.1.0'```
+Use with JitPack and implement in your app/
+```
+    allprojects {
+        repositories {
+            jcenter()
+            maven { url "https://jitpack.io" }
+        }
+   }
+
+   dependencies {
+        implementation 'com.github.Jakebreen:android-sendgrid:1.1.0'
+   }
+```
 
 # How to use
 Create an instance of the SendGrid library tied to your API key.
@@ -52,7 +64,10 @@ mail.addRecipientCarbonCopy(@NonNull String email, @Nullable String name)
 mail.addRecipientBlindCarbonCopy(@NonNull String email, @Nullable String name)
 mail.setReplyTo(@NonNull String email, @Nullable String name)
 mail.setHtmlContent(@NonNull String body)
-mail.setSendAt(int sendAt)
+mail.setSendAt(@NonNull int sendAt)
+mail.setClickTrackingEnabled(@NonNull Boolean enabled)
+mail.setOpenTrackingEnabled(@NonNull Boolean enabled)
+mail.setSubscriptionTrackingEnabled(@NonNull Boolean enabled)
 ```
 
 # TestApp
