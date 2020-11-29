@@ -8,11 +8,11 @@ Use with JitPack and implement in your app
             jcenter()
             maven { url "https://jitpack.io" }
         }
-   }
+    }
 
-   dependencies {
-        implementation 'com.github.Jakebreen:android-sendgrid:1.1.0'
-   }
+    dependencies {
+         implementation 'com.github.Jakebreen:android-sendgrid:1.1.0'
+    }
 ```
 
 # How to use
