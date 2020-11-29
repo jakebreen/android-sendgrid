@@ -163,6 +163,23 @@ public class SendGridMailBodyTest {
         assertEquals(parseJsonFile("/json/email"), create(mail).getBody().toString());
     }
 
+    @Test
+    public void givenAllTrackingSettingsEnabled_whenCreatingMailBody_thenReturnJsonBody() throws IOException {
+        Map<String, String> map = new HashMap<>();
+        map.put("john.doe@example.com", "John Doe");
+        map.put("kate.green@example.com", "Kate Green");
+        map.put("will.smith@example.com", "Will Smith");
+        when(mail.getRecipients()).thenReturn(map);
+
+        Map<String, Map<String, Boolean>> trackingSettings = new HashMap<>();
+        trackingSettings.put(TRACKING_SETTING_CLICK_TRACKING, new HashMap<String, Boolean>() {{ put(TRACKING_SETTING_ENABLED, true); }});
+        trackingSettings.put(TRACKING_SETTING_OPEN_TRACKING, new HashMap<String, Boolean>() {{ put(TRACKING_SETTING_ENABLED, true); }});
+        trackingSettings.put(TRACKING_SETTING_SUBSCRIPTION_TRACKING, new HashMap<String, Boolean>() {{ put(TRACKING_SETTING_ENABLED, true); }});
+        when(mail.getTrackingSettings()).thenReturn(trackingSettings);
+
+        assertEquals(parseJsonFile("/json/emails_tracking_settings_enabled"), create(mail).getBody().toString());
+    }
+
     private String parseJsonFile(String file) throws IOException {
         InputStream inputStream = getClass().getResourceAsStream(file);
         StringBuilder stringBuilder = new StringBuilder();

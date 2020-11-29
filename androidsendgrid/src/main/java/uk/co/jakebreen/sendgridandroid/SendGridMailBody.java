@@ -26,6 +26,7 @@ class SendGridMailBody {
     private static final String BODY_REPLY_TO = "reply_to";
     private static final String BODY_SEND_AT = "send_at";
     private static final String BODY_ATTACHMENTS = "attachments";
+    private static final String BODY_TRACKING_SETTINGS = "tracking_settings";
 
     private static final String PARAMS_EMAIL = "email";
     private static final String PARAMS_NAME = "name";
@@ -33,7 +34,6 @@ class SendGridMailBody {
     private static final String PARAMS_CONTENT_VALUE = "value";
     private static final String PARAMS_ATTACHMENT_CONTENT = "content";
     private static final String PARAMS_ATTACHMENT_FILENAME = "filename";
-
 
     private final JSONObject body;
 
@@ -66,6 +66,9 @@ class SendGridMailBody {
                 parent.put(BODY_SEND_AT, getSendAt(mail));
             if (mail.getAttachments().size() > 0)
                 parent.put(BODY_ATTACHMENTS, getAttachments(mail));
+            if (mail.getTrackingSettings().size() > 0) {
+                parent.put(BODY_TRACKING_SETTINGS, getTrackingSettings(mail));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -163,6 +166,17 @@ class SendGridMailBody {
             jsonArray.put(jsonObject);
         }
         return jsonArray;
+    }
+
+    static JSONObject getTrackingSettings(SendGridMail mail) throws JSONException {
+        final JSONObject jsonObject = new JSONObject();
+        for (Entry<String, Map<String, Boolean>> set : mail.getTrackingSettings().entrySet()) {
+            System.out.println(set.getKey());
+            System.out.println(set.getValue());
+            jsonObject.put(set.getKey(), set.getValue());
+        }
+        System.out.println(jsonObject);
+        return jsonObject;
     }
 
     private static JSONArray setEmails(Map<String, String> emailMap) throws JSONException {
