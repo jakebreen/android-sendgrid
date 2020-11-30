@@ -56,7 +56,7 @@ response.getCode()
 response.getErrorMessage()
 ```
 
-Additional SendGridMail methods that aren't required to send an email
+Additional SendGridMail methods that aren't required to send an email include templates, tracking, carbon copies, attachments and others
 ```
 mail.addAttachment(@NonNull File file)
 mail.addAttachment(@NonNull Uri uri)
