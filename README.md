@@ -68,6 +68,7 @@ mail.setSendAt(@NonNull int sendAt)
 mail.setClickTrackingEnabled(@NonNull Boolean enabled)
 mail.setOpenTrackingEnabled(@NonNull Boolean enabled)
 mail.setSubscriptionTrackingEnabled(@NonNull Boolean enabled)
+mail.setTemplateId(@NonNull String templateId)
 ```
 
 # TestApp
