@@ -11,7 +11,7 @@ allprojects {
 }
 
 dependencies {
-     implementation 'com.github.Jakebreen:android-sendgrid:1.1.0'
+     implementation 'com.github.Jakebreen:android-sendgrid:1.2.0'
 }
 ```
 
@@ -68,7 +68,20 @@ mail.setSendAt(@NonNull int sendAt)
 mail.setClickTrackingEnabled(@NonNull Boolean enabled)
 mail.setOpenTrackingEnabled(@NonNull Boolean enabled)
 mail.setSubscriptionTrackingEnabled(@NonNull Boolean enabled)
+```
+
+Transactional email templates and custom data can be applied to the SendGridMail in the form of a JSONObject structured into key/value pairs
+```
 mail.setTemplateId(@NonNull String templateId)
+mail.setDynamicTemplateData(@NonNull JSONObject jsonObject)
+
+// JSONObject structured into key/value pairs
+final JSONObject templateData = new JSONObject();
+templateData.put("forename", "Jane");
+templateData.put("surname", "Doe");
+templateData.put("message", "Hello, This is my email");
+
+mail.setDynamicTemplateData(templateData)
 ```
 
 # TestApp
