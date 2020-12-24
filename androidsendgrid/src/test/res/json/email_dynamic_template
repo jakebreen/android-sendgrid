@@ -1,0 +1,28 @@
+{
+  "personalizations":[
+    {
+      "dynamic_template_data":{
+        "forename":"Englebert",
+        "surname":"Humperdink",
+        "retired":true,
+        "age":85
+      },
+      "to":[
+        {
+          "email":"example@sendgrid.net"
+        }
+      ]
+    }
+  ],
+  "from":{
+    "name":"John Doe",
+    "email":"john.doe@example.com"
+  },
+  "template_id":"733ba07f-ead1-41fc-933a-3976baa23716",
+  "content":[
+    {
+      "type":"text/plain",
+      "value":"Email content body"
+    }
+  ]
+}

@@ -27,6 +27,7 @@ class SendGridMailBody {
     private static final String BODY_SEND_AT = "send_at";
     private static final String BODY_ATTACHMENTS = "attachments";
     private static final String BODY_TRACKING_SETTINGS = "tracking_settings";
+    private static final String BODY_DYNAMIC_TEMPLATE_DATA = "dynamic_template_data";
 
     private static final String PARAMS_EMAIL = "email";
     private static final String PARAMS_NAME = "name";
@@ -48,12 +49,17 @@ class SendGridMailBody {
     private static JSONObject createMailBody(SendGridMail mail) {
         final JSONObject parent = new JSONObject();
         try {
-            JSONArray personalization = new JSONArray();
-            personalization.put(getToParams(mail));
+            final JSONArray personalization = new JSONArray();
+            final JSONObject personalizationObj = new JSONObject();
+            personalizationObj.put(BODY_TO, getEmailsArray(mail.getRecipients()));
             if (!mail.getRecipientCarbonCopies().isEmpty())
-                personalization.put(getCcParams(mail));
+                personalizationObj.put(BODY_CC, getEmailsArray(mail.getRecipientCarbonCopies()));
             if (!mail.getRecipientBlindCarbonCopies().isEmpty())
-                personalization.put(getBccParams(mail));
+                personalizationObj.put(BODY_BCC, getEmailsArray(mail.getRecipientBlindCarbonCopies()));
+            if (mail.getDynamicTemplateData() != null)
+                personalizationObj.put(BODY_DYNAMIC_TEMPLATE_DATA, mail.getDynamicTemplateData());
+            personalization.put(personalizationObj);
+
             parent.put(BODY_PERSONALISATIONS, personalization);
             parent.put(BODY_FROM, getFromParams(mail));
             parent.put(BODY_SUBJECT, getSubjectParams(mail));
@@ -115,24 +121,6 @@ class SendGridMailBody {
         return mail.getTemplateId();
     }
 
-    static JSONObject getToParams(SendGridMail mail) throws JSONException {
-        final JSONObject jsonObject = new JSONObject();
-        jsonObject.put(BODY_TO, setEmails(mail.getRecipients()));
-        return jsonObject;
-    }
-
-    static JSONObject getCcParams(SendGridMail mail) throws JSONException {
-        final JSONObject jsonObject = new JSONObject();
-        jsonObject.put(BODY_CC, setEmails(mail.getRecipientCarbonCopies()));
-        return jsonObject;
-    }
-
-    static JSONObject getBccParams(SendGridMail mail) throws JSONException {
-        final JSONObject jsonObject = new JSONObject();
-        jsonObject.put(BODY_BCC, setEmails(mail.getRecipientBlindCarbonCopies()));
-        return jsonObject;
-    }
-
     static JSONObject getFromParams(SendGridMail mail) throws JSONException {
         final JSONObject jsonObject = new JSONObject();
         for (Entry<String, String> set : mail.getFrom().entrySet()) {
@@ -179,7 +167,7 @@ class SendGridMailBody {
         return jsonObject;
     }
 
-    private static JSONArray setEmails(Map<String, String> emailMap) throws JSONException {
+    static JSONArray getEmailsArray(Map<String, String> emailMap) throws JSONException {
         int count = 0;
         final JSONArray jsonArray = new JSONArray();
         for (Entry<String, String> set : emailMap.entrySet()) {
