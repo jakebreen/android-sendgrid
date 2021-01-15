@@ -11,7 +11,7 @@ allprojects {
 }
 
 dependencies {
-     implementation 'com.github.jakebreen:android-sendgrid:1.2.0-beta.1'
+     implementation 'com.github.jakebreen:android-sendgrid:1.2.0'
 }
 ```
 
