@@ -5,6 +5,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class SendGridMail {
     private String templateId;
     private int sendAt;
     private List<Attachment> attachments = new ArrayList<>();
+    private JSONObject dynamicTemplateData;
 
     public SendGridMail() { }
 
@@ -219,6 +222,15 @@ public class SendGridMail {
     }
 
     /**
+     * Dynamic template data is available using Handlebars syntax in Dynamic Transactional Templates.
+     *
+     * @param jsonObject of key/value pairs that the template expects
+     */
+    public void setDynamicTemplateData(@NonNull JSONObject jsonObject) {
+        dynamicTemplateData = jsonObject;
+    }
+
+    /**
      * Returns a list of attached file names.
      *
      * @return list of file names
@@ -273,6 +285,10 @@ public class SendGridMail {
 
     List<Attachment> getFileAttachments() {
         return attachments;
+    }
+
+    JSONObject getDynamicTemplateData() {
+        return dynamicTemplateData;
     }
 
     static class Attachment {

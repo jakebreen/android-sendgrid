@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFERENCE_SUBJECT = "PREFERENCE_SUBJECT";
     private static final String PREFERENCE_CONTENT = "PREFERENCE_CONTENT";
 
+    // Include template ID if required and use 'mail.setDynamicTemplateData()' to include customizations
+    private static final String TEMPLATE_ID = "";
+
     private static final int REQUEST_CODE = 1;
 
     private Button btnSend, btnAddAttachment, btnClearAttachments;
@@ -128,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        if (!TEMPLATE_ID.isEmpty()) mail.setTemplateId(TEMPLATE_ID);
 
         send(mail);
     }
