@@ -97,6 +97,7 @@ public class SendGridMail {
      * @param name  name of person or company that is sending this mail
      */
     public void setFrom(@NonNull String email, @Nullable String name) {
+        from.clear();
         if (name == null)
             name = EMPTY;
         from.put(email, name);
@@ -109,9 +110,10 @@ public class SendGridMail {
      * @param name  name of person or company that is sending this mail
      */
     public void setReplyTo(@NonNull String email, @Nullable String name) {
+        replyTo.clear();
         if (name == null)
             name = EMPTY;
-        from.put(email, name);
+        replyTo.put(email, name);
     }
 
     /**
