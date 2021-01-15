@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etRecipientEmail, getEtRecipientName;
     private EditText etSenderEmail, getEtSenderName;
     private EditText etSubject, etContent;
+    private EditText etReplyToEmail, getEtReplyToName;
     private TextView tvAttachments;
 
     private SendGrid sendGrid;
@@ -70,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
         getEtSenderName = findViewById(R.id.et_senders_name);
         etSubject = findViewById(R.id.et_subject);
         etContent = findViewById(R.id.et_content);
+        etReplyToEmail = findViewById(R.id.et_reply_to_email);
+        getEtReplyToName = findViewById(R.id.et_reply_to_name);
         tvAttachments = findViewById(R.id.tv_attachments);
         btnClearAttachments = findViewById(R.id.btn_clear_attachments);
 
@@ -108,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
         final String senderName = getEtSenderName.getText().toString();
         final String subject = etSubject.getText().toString();
         final String content = etContent.getText().toString();
+        final String replyToEmail = etReplyToEmail.getText().toString();
+        final String replyToName = getEtReplyToName.getText().toString();
 
         if (recipientEmail.isEmpty() || senderEmail.isEmpty() || subject.isEmpty() || content.isEmpty()) {
             showMissingField();
@@ -119,6 +124,10 @@ public class MainActivity extends AppCompatActivity {
         mail.setFrom(senderEmail, senderName);
         mail.setSubject(subject);
         mail.setContent(content);
+
+        if (!replyToEmail.equals("")) {
+            mail.setReplyTo(replyToEmail, replyToName);
+        }
 
         try {
             if (!attachments.isEmpty())
