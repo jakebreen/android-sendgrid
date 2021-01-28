@@ -1,3 +1,5 @@
+![header](https://github.com/Jakebreen/android-sendgrid/blob/master/images/heading-image.jpg)
+
 # android-sendgrid
 A simplified Android email library utilising SendGrid's v3 API that targets minSdkVersion 16.
 
