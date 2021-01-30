@@ -89,7 +89,7 @@ class SendGridMailBody {
         final JSONArray jsonArray = new JSONArray();
         final Map<String, String> contentMap = mail.getContent();
 
-        // If using only a template the content block must at least a single character string
+        // If using a template the content block must be at least a single character
         // https://github.com/Jakebreen/android-sendgrid/issues/10
         if (contentMap.isEmpty()) {
             final JSONObject jsonObject = new JSONObject();

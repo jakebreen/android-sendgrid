@@ -40,7 +40,7 @@ class SendGridCall {
                 String response = SendGridCall.this.readInputStream(inputStream);
                 urlConnection.disconnect();
 
-                return SendGridCall.this.createResponse(code, response);
+                return createResponse(code, response);
             }
         };
     }
