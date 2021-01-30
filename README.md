@@ -7,7 +7,7 @@ Use with JitPack and implement in your app
 ```
 allprojects {
     repositories {
-        jcenter()
+        ...
         maven { url "https://jitpack.io" }
     }
 }
