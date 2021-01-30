@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 1;
 
     private Button btnSend, btnAddAttachment, btnClearAttachments;
-    private EditText etRecipientEmail, getEtRecipientName;
-    private EditText etSenderEmail, getEtSenderName;
+    private EditText etRecipientEmail, etRecipientName;
+    private EditText etSenderEmail, etSenderName;
     private EditText etSubject, etContent;
     private EditText etReplyToEmail, getEtReplyToName;
     private TextView tvAttachments;
@@ -66,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
         btnSend = findViewById(R.id.btn_send);
         btnAddAttachment = findViewById(R.id.btn_attachment);
         etRecipientEmail = findViewById(R.id.et_recipient_email);
-        getEtRecipientName = findViewById(R.id.et_recipient_name);
+        etRecipientName = findViewById(R.id.et_recipient_name);
         etSenderEmail = findViewById(R.id.et_senders_email);
-        getEtSenderName = findViewById(R.id.et_senders_name);
+        etSenderName = findViewById(R.id.et_senders_name);
         etSubject = findViewById(R.id.et_subject);
         etContent = findViewById(R.id.et_content);
         etReplyToEmail = findViewById(R.id.et_reply_to_email);
@@ -81,11 +81,17 @@ public class MainActivity extends AppCompatActivity {
         btnClearAttachments.setOnClickListener(v -> clearAttachments());
 
         etRecipientEmail.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_EMAIL, ""));
-        getEtRecipientName.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_NAME, ""));
+        etRecipientName.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_NAME, ""));
         etSenderEmail.setText(sharedPreferences.getString(PREFERENCE_SENDER_EMAIL, ""));
-        getEtSenderName.setText(sharedPreferences.getString(PREFERENCE_SENDER_NAME, ""));
+        etSenderName.setText(sharedPreferences.getString(PREFERENCE_SENDER_NAME, ""));
         etSubject.setText(sharedPreferences.getString(PREFERENCE_SUBJECT, ""));
         etContent.setText(sharedPreferences.getString(PREFERENCE_CONTENT, ""));
+
+//        etSenderEmail.setText("android-sendgrid@testapp.com");
+//        etSenderName.setText("Test App");
+//        etRecipientName.setText("Recipient");
+//        etSubject.setText("Test App Subject");
+
         clearAttachments();
     }
 
@@ -106,15 +112,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendMail() {
         final String recipientEmail = etRecipientEmail.getText().toString();
-        final String recipientName = getEtRecipientName.getText().toString();
+        final String recipientName = etRecipientName.getText().toString();
         final String senderEmail = etSenderEmail.getText().toString();
-        final String senderName = getEtSenderName.getText().toString();
+        final String senderName = etSenderName.getText().toString();
         final String subject = etSubject.getText().toString();
         final String content = etContent.getText().toString();
         final String replyToEmail = etReplyToEmail.getText().toString();
         final String replyToName = getEtReplyToName.getText().toString();
 
-        if (recipientEmail.isEmpty() || senderEmail.isEmpty() || subject.isEmpty() || content.isEmpty()) {
+        if (recipientEmail.isEmpty() || senderEmail.isEmpty() || subject.isEmpty()) {
             showMissingField();
             return;
         }
@@ -123,7 +129,8 @@ public class MainActivity extends AppCompatActivity {
         mail.addRecipient(recipientEmail, recipientName);
         mail.setFrom(senderEmail, senderName);
         mail.setSubject(subject);
-        mail.setContent(content);
+
+        if (!content.isEmpty()) mail.setContent(content);
 
         if (!replyToEmail.equals("")) {
             mail.setReplyTo(replyToEmail, replyToName);
@@ -209,9 +216,9 @@ public class MainActivity extends AppCompatActivity {
         final SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putString(PREFERENCE_RECIPIENT_EMAIL, etRecipientEmail.getText().toString());
-        editor.putString(PREFERENCE_RECIPIENT_NAME, getEtRecipientName.getText().toString());
+        editor.putString(PREFERENCE_RECIPIENT_NAME, etRecipientName.getText().toString());
         editor.putString(PREFERENCE_SENDER_EMAIL, etSenderEmail.getText().toString());
-        editor.putString(PREFERENCE_SENDER_NAME, getEtSenderName.getText().toString());
+        editor.putString(PREFERENCE_SENDER_NAME, etSenderName.getText().toString());
         editor.putString(PREFERENCE_SUBJECT, etSubject.getText().toString());
         editor.putString(PREFERENCE_CONTENT, etContent.getText().toString());
 

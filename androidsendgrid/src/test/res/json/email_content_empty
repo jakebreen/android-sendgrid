@@ -1,0 +1,21 @@
+{
+  "personalizations":[
+    {
+      "to":[
+        {
+          "email":"example@sendgrid.net"
+        }
+      ]
+    }
+  ],
+  "from":{
+    "name":"John Doe",
+    "email":"john.doe@example.com"
+  },
+  "content":[
+    {
+      "type":"text/plain",
+      "value":" "
+    }
+  ]
+}

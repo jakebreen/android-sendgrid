@@ -29,5 +29,10 @@
     }
   },
   "from":{},
-  "content":[]
+  "content":[
+      {
+        "type":"text/plain",
+        "value":" "
+      }
+    ]
 }

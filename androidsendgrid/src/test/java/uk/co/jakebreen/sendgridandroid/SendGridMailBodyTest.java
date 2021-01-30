@@ -219,6 +219,19 @@ public class SendGridMailBodyTest {
         assertEquals(parseJsonFile("/json/email_dynamic_template"), create(mail).getBody().toString());
     }
 
+    @Test
+    public void givenDynamicTemplate_whenContentNotIncluded_thenReturnJsonBodyWithEmptyContentBlock() throws IOException {
+        final Map<String, String> toMap = new HashMap<>();
+        toMap.put("example@sendgrid.net", EMPTY);
+        when(mail.getRecipients()).thenReturn(toMap);
+
+        final Map<String, String> fromMap = new HashMap<>();
+        fromMap.put("john.doe@example.com", "John Doe");
+        when(mail.getFrom()).thenReturn(fromMap);
+
+        assertEquals(parseJsonFile("/json/email_content_empty"), create(mail).getBody().toString());
+    }
+
     private String parseJsonFile(String file) throws IOException {
         final InputStream inputStream = getClass().getResourceAsStream(file);
         final StringBuilder stringBuilder = new StringBuilder();
