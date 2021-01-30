@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -23,6 +25,7 @@ import io.reactivex.schedulers.Schedulers;
 import uk.co.jakebreen.sendgridandroid.SendGrid;
 import uk.co.jakebreen.sendgridandroid.SendGridMail;
 import uk.co.jakebreen.sendgridandroid.SendGridResponse;
+import uk.co.jakebreen.sendgridandroid.SendTask;
 import uk.co.jakebreen.testapp.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -76,9 +79,24 @@ public class MainActivity extends AppCompatActivity {
         tvAttachments = findViewById(R.id.tv_attachments);
         btnClearAttachments = findViewById(R.id.btn_clear_attachments);
 
-        btnSend.setOnClickListener(v -> sendMail());
-        btnAddAttachment.setOnClickListener(v -> addAttachment());
-        btnClearAttachments.setOnClickListener(v -> clearAttachments());
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.sendMail();
+            }
+        });
+        btnAddAttachment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.addAttachment();
+            }
+        });
+        btnClearAttachments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.clearAttachments();
+            }
+        });
 
         etRecipientEmail.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_EMAIL, ""));
         etRecipientName.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_NAME, ""));
@@ -154,10 +172,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void send(SendGridMail mail) {
-        disposable = Single.fromCallable(sendGrid.send(mail))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onResponse);
+        SendTask task = new SendTask(sendGrid, mail);
+        try {
+            SendGridResponse response = task.execute().get();
+            onResponse(response);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+//        disposable = Single.fromCallable(sendGrid.send(mail))
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(this::onResponse);
     }
 
     private void onResponse(SendGridResponse response) {
