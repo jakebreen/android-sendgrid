@@ -92,10 +92,14 @@ class SendGridMailBody {
         // If using a template the content block must be at least a single character
         // https://github.com/Jakebreen/android-sendgrid/issues/10
         if (contentMap.isEmpty()) {
-            final JSONObject jsonObject = new JSONObject();
-            jsonObject.put(PARAMS_CONTENT_TYPE, TYPE_PLAIN);
-            jsonObject.put(PARAMS_CONTENT_VALUE, " ");
-            jsonArray.put(jsonObject);
+            final JSONObject jsonObjectPlain = new JSONObject();
+            jsonObjectPlain.put(PARAMS_CONTENT_TYPE, TYPE_PLAIN);
+            jsonObjectPlain.put(PARAMS_CONTENT_VALUE, " ");
+            jsonArray.put(jsonObjectPlain);
+            final JSONObject jsonObjectHtml = new JSONObject();
+            jsonObjectHtml.put(PARAMS_CONTENT_TYPE, TYPE_HTML);
+            jsonObjectHtml.put(PARAMS_CONTENT_VALUE, " ");
+            jsonArray.put(jsonObjectHtml);
             return jsonArray;
         }
 
@@ -105,6 +109,11 @@ class SendGridMailBody {
             jsonObject.put(PARAMS_CONTENT_VALUE, contentMap.get(TYPE_PLAIN));
             jsonArray.put(jsonObject);
             contentMap.remove(TYPE_PLAIN);
+        } else {
+            final JSONObject jsonObject = new JSONObject();
+            jsonObject.put(PARAMS_CONTENT_TYPE, TYPE_PLAIN);
+            jsonObject.put(PARAMS_CONTENT_VALUE, " ");
+            jsonArray.put(jsonObject);
         }
 
         if (contentMap.containsKey(TYPE_HTML)) {
@@ -113,6 +122,11 @@ class SendGridMailBody {
             jsonObject.put(PARAMS_CONTENT_VALUE, contentMap.get(TYPE_HTML));
             jsonArray.put(jsonObject);
             contentMap.remove(TYPE_HTML);
+        } else {
+            final JSONObject jsonObject = new JSONObject();
+            jsonObject.put(PARAMS_CONTENT_TYPE, TYPE_HTML);
+            jsonObject.put(PARAMS_CONTENT_VALUE, " ");
+            jsonArray.put(jsonObject);
         }
 
         for (Entry<String, String> set : contentMap.entrySet()) {

@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,10 +108,10 @@ public class MainActivity extends AppCompatActivity {
         etSubject.setText(sharedPreferences.getString(PREFERENCE_SUBJECT, ""));
         etContent.setText(sharedPreferences.getString(PREFERENCE_CONTENT, ""));
 
-//        etSenderEmail.setText("android-sendgrid@testapp.com");
-//        etSenderName.setText("Test App");
-//        etRecipientName.setText("Recipient");
-//        etSubject.setText("Test App Subject");
+        etSenderEmail.setText("android-sendgrid@testapp.com");
+        etSenderName.setText("Test App");
+        etRecipientName.setText("Recipient");
+        etSubject.setText("Test App Subject");
 
         clearAttachments();
     }
@@ -166,9 +169,25 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if (!TEMPLATE_ID.isEmpty()) mail.setTemplateId(TEMPLATE_ID);
+        if (!TEMPLATE_ID.isEmpty()) {
+            mail.setTemplateId(TEMPLATE_ID);
+//            try {
+//                mail.setDynamicTemplateData(getTemplatePayload());
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+        }
 
         send(mail);
+    }
+
+    private JSONObject getTemplatePayload() throws JSONException {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put("field_one", "Hello this is field one");
+        jsonObject.put("field_two", "Hello this is field two");
+        jsonObject.put("field_three", "Hello this is field three");
+        jsonObject.put("image_text", "Hello this is image text");
+        return jsonObject;
     }
 
     private void send(SendGridMail mail) {

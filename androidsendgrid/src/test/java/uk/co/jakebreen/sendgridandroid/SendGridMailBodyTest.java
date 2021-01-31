@@ -86,11 +86,22 @@ public class SendGridMailBodyTest {
     }
 
     @Test
-    public void givenContent_whenCreatingMailBody_thenReturnJsonBody() throws JSONException {
-        final String expectedValue = "[{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"}]";
+    public void givenPlainContent_whenCreatingMailBody_thenPlainContentAdded_andHtmlContentAddedAsEmpty() throws JSONException {
+        final String expectedValue = "[{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"},{\"type\":\"text/html\",\"value\":\" \"}]";
 
         final Map<String, String> map = new HashMap<>();
         map.put(TYPE_PLAIN, CONTENT_BODY);
+        when(mail.getContent()).thenReturn(map);
+
+        assertEquals(expectedValue, getContentParams(mail).toString());
+    }
+
+    @Test
+    public void givenHtmlContent_whenCreatingMailBody_thenHtmlContentAdded_andPlainContentAddedAsEmpty() throws JSONException {
+        final String expectedValue = "[{\"type\":\"text/plain\",\"value\":\" \"},{\"type\":\"text/html\",\"value\":\"" + CONTENT_BODY + "\"}]";
+
+        final Map<String, String> map = new HashMap<>();
+        map.put(TYPE_HTML, CONTENT_BODY);
         when(mail.getContent()).thenReturn(map);
 
         assertEquals(expectedValue, getContentParams(mail).toString());
@@ -210,6 +221,7 @@ public class SendGridMailBodyTest {
 
         final Map<String, String> contentMap = new HashMap<>();
         contentMap.put(TYPE_PLAIN, CONTENT_BODY);
+        contentMap.put(TYPE_HTML, CONTENT_BODY);
         when(mail.getContent()).thenReturn(contentMap);
 
         final Map<String, String> fromMap = new HashMap<>();
@@ -230,6 +242,40 @@ public class SendGridMailBodyTest {
         when(mail.getFrom()).thenReturn(fromMap);
 
         assertEquals(parseJsonFile("/json/email_content_empty"), create(mail).getBody().toString());
+    }
+
+    @Test
+    public void givenPlainContent_thenHtmlContentEmpty() throws IOException {
+        final Map<String, String> toMap = new HashMap<>();
+        toMap.put("example@sendgrid.net", EMPTY);
+        when(mail.getRecipients()).thenReturn(toMap);
+
+        final Map<String, String> fromMap = new HashMap<>();
+        fromMap.put("john.doe@example.com", "John Doe");
+        when(mail.getFrom()).thenReturn(fromMap);
+
+        final Map<String, String> contentMap = new HashMap<>();
+        contentMap.put(TYPE_PLAIN, CONTENT_BODY);
+        when(mail.getContent()).thenReturn(contentMap);
+
+        assertEquals(parseJsonFile("/json/email_content_html_empty"), create(mail).getBody().toString());
+    }
+
+    @Test
+    public void givenHtmlContent_thenPlainContentEmpty() throws IOException {
+        final Map<String, String> toMap = new HashMap<>();
+        toMap.put("example@sendgrid.net", EMPTY);
+        when(mail.getRecipients()).thenReturn(toMap);
+
+        final Map<String, String> fromMap = new HashMap<>();
+        fromMap.put("john.doe@example.com", "John Doe");
+        when(mail.getFrom()).thenReturn(fromMap);
+
+        final Map<String, String> contentMap = new HashMap<>();
+        contentMap.put(TYPE_HTML, CONTENT_BODY);
+        when(mail.getContent()).thenReturn(contentMap);
+
+        assertEquals(parseJsonFile("/json/email_content_plain_empty"), create(mail).getBody().toString());
     }
 
     private String parseJsonFile(String file) throws IOException {
