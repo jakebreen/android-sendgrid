@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/jakebreen/android-sendgrid.svg)](https://jitpack.io/#jakebreen/android-sendgrid)
+
 ![header](https://github.com/Jakebreen/android-sendgrid/blob/master/images/heading-image.jpg)
 
 # android-sendgrid
