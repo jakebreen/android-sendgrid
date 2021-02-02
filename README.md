@@ -58,7 +58,7 @@ Single.fromCallable(sendGrid.send(mail))
 ```
 
 Send requests return a SendGridResponse that contains the success state of the request and the associated HTTP response code.
-A failed request will propagate the error message from the API.
+A failed request will contain the error message from the API.
 ```
 response.isSuccessful()
 response.getCode()
