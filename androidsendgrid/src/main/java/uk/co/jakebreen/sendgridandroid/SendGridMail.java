@@ -198,7 +198,7 @@ public class SendGridMail {
      *
      * @param enabled Indicates if this setting is enabled.
      */
-    public void setClickTrackingEnabled(@NonNull Boolean enabled) {
+    public void setClickTrackingEnabled(@NonNull final Boolean enabled) {
         trackingSettings.put(TRACKING_SETTING_CLICK_TRACKING, new HashMap<String, Boolean>() {{ put(TRACKING_SETTING_ENABLED, enabled); }});
     }
 
@@ -208,7 +208,7 @@ public class SendGridMail {
      *
      * @param enabled Indicates if this setting is enabled.
      */
-    public void setOpenTrackingEnabled(@NonNull Boolean enabled) {
+    public void setOpenTrackingEnabled(@NonNull final Boolean enabled) {
         trackingSettings.put(TRACKING_SETTING_OPEN_TRACKING, new HashMap<String, Boolean>() {{ put(TRACKING_SETTING_ENABLED, enabled); }});
     }
 
@@ -219,7 +219,7 @@ public class SendGridMail {
      *
      * @param enabled Indicates if this setting is enabled.
      */
-    public void setSubscriptionTrackingEnabled(@NonNull Boolean enabled) {
+    public void setSubscriptionTrackingEnabled(@NonNull final Boolean enabled) {
         trackingSettings.put(TRACKING_SETTING_SUBSCRIPTION_TRACKING, new HashMap<String, Boolean>() {{ put(TRACKING_SETTING_ENABLED, enabled); }});
     }
 

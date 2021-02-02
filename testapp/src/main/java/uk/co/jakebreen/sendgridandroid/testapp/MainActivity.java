@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,10 +12,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -23,6 +28,7 @@ import io.reactivex.schedulers.Schedulers;
 import uk.co.jakebreen.sendgridandroid.SendGrid;
 import uk.co.jakebreen.sendgridandroid.SendGridMail;
 import uk.co.jakebreen.sendgridandroid.SendGridResponse;
+import uk.co.jakebreen.sendgridandroid.SendTask;
 import uk.co.jakebreen.testapp.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 1;
 
     private Button btnSend, btnAddAttachment, btnClearAttachments;
-    private EditText etRecipientEmail, getEtRecipientName;
-    private EditText etSenderEmail, getEtSenderName;
+    private EditText etRecipientEmail, etRecipientName;
+    private EditText etSenderEmail, etSenderName;
     private EditText etSubject, etContent;
     private EditText etReplyToEmail, getEtReplyToName;
     private TextView tvAttachments;
@@ -66,9 +72,9 @@ public class MainActivity extends AppCompatActivity {
         btnSend = findViewById(R.id.btn_send);
         btnAddAttachment = findViewById(R.id.btn_attachment);
         etRecipientEmail = findViewById(R.id.et_recipient_email);
-        getEtRecipientName = findViewById(R.id.et_recipient_name);
+        etRecipientName = findViewById(R.id.et_recipient_name);
         etSenderEmail = findViewById(R.id.et_senders_email);
-        getEtSenderName = findViewById(R.id.et_senders_name);
+        etSenderName = findViewById(R.id.et_senders_name);
         etSubject = findViewById(R.id.et_subject);
         etContent = findViewById(R.id.et_content);
         etReplyToEmail = findViewById(R.id.et_reply_to_email);
@@ -76,16 +82,37 @@ public class MainActivity extends AppCompatActivity {
         tvAttachments = findViewById(R.id.tv_attachments);
         btnClearAttachments = findViewById(R.id.btn_clear_attachments);
 
-        btnSend.setOnClickListener(v -> sendMail());
-        btnAddAttachment.setOnClickListener(v -> addAttachment());
-        btnClearAttachments.setOnClickListener(v -> clearAttachments());
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.sendMail();
+            }
+        });
+        btnAddAttachment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.addAttachment();
+            }
+        });
+        btnClearAttachments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.clearAttachments();
+            }
+        });
 
         etRecipientEmail.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_EMAIL, ""));
-        getEtRecipientName.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_NAME, ""));
+        etRecipientName.setText(sharedPreferences.getString(PREFERENCE_RECIPIENT_NAME, ""));
         etSenderEmail.setText(sharedPreferences.getString(PREFERENCE_SENDER_EMAIL, ""));
-        getEtSenderName.setText(sharedPreferences.getString(PREFERENCE_SENDER_NAME, ""));
+        etSenderName.setText(sharedPreferences.getString(PREFERENCE_SENDER_NAME, ""));
         etSubject.setText(sharedPreferences.getString(PREFERENCE_SUBJECT, ""));
         etContent.setText(sharedPreferences.getString(PREFERENCE_CONTENT, ""));
+
+        etSenderEmail.setText("android-sendgrid@testapp.com");
+        etSenderName.setText("Test App");
+        etRecipientName.setText("Recipient");
+        etSubject.setText("Test App Subject");
+
         clearAttachments();
     }
 
@@ -106,15 +133,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendMail() {
         final String recipientEmail = etRecipientEmail.getText().toString();
-        final String recipientName = getEtRecipientName.getText().toString();
+        final String recipientName = etRecipientName.getText().toString();
         final String senderEmail = etSenderEmail.getText().toString();
-        final String senderName = getEtSenderName.getText().toString();
+        final String senderName = etSenderName.getText().toString();
         final String subject = etSubject.getText().toString();
         final String content = etContent.getText().toString();
         final String replyToEmail = etReplyToEmail.getText().toString();
         final String replyToName = getEtReplyToName.getText().toString();
 
-        if (recipientEmail.isEmpty() || senderEmail.isEmpty() || subject.isEmpty() || content.isEmpty()) {
+        if (recipientEmail.isEmpty() || senderEmail.isEmpty() || subject.isEmpty()) {
             showMissingField();
             return;
         }
@@ -123,7 +150,8 @@ public class MainActivity extends AppCompatActivity {
         mail.addRecipient(recipientEmail, recipientName);
         mail.setFrom(senderEmail, senderName);
         mail.setSubject(subject);
-        mail.setContent(content);
+
+        if (!content.isEmpty()) mail.setContent(content);
 
         if (!replyToEmail.equals("")) {
             mail.setReplyTo(replyToEmail, replyToName);
@@ -141,16 +169,42 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if (!TEMPLATE_ID.isEmpty()) mail.setTemplateId(TEMPLATE_ID);
+        if (!TEMPLATE_ID.isEmpty()) {
+            mail.setTemplateId(TEMPLATE_ID);
+//            try {
+//                mail.setDynamicTemplateData(getTemplatePayload());
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+        }
 
         send(mail);
     }
 
+    private JSONObject getTemplatePayload() throws JSONException {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put("field_one", "Hello this is field one");
+        jsonObject.put("field_two", "Hello this is field two");
+        jsonObject.put("field_three", "Hello this is field three");
+        jsonObject.put("image_text", "Hello this is image text");
+        return jsonObject;
+    }
+
     private void send(SendGridMail mail) {
-        disposable = Single.fromCallable(sendGrid.send(mail))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onResponse);
+        SendTask task = new SendTask(sendGrid, mail);
+        try {
+            SendGridResponse response = task.execute().get();
+            onResponse(response);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+//        disposable = Single.fromCallable(sendGrid.send(mail))
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(this::onResponse);
     }
 
     private void onResponse(SendGridResponse response) {
@@ -209,9 +263,9 @@ public class MainActivity extends AppCompatActivity {
         final SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putString(PREFERENCE_RECIPIENT_EMAIL, etRecipientEmail.getText().toString());
-        editor.putString(PREFERENCE_RECIPIENT_NAME, getEtRecipientName.getText().toString());
+        editor.putString(PREFERENCE_RECIPIENT_NAME, etRecipientName.getText().toString());
         editor.putString(PREFERENCE_SENDER_EMAIL, etSenderEmail.getText().toString());
-        editor.putString(PREFERENCE_SENDER_NAME, getEtSenderName.getText().toString());
+        editor.putString(PREFERENCE_SENDER_NAME, etSenderName.getText().toString());
         editor.putString(PREFERENCE_SUBJECT, etSubject.getText().toString());
         editor.putString(PREFERENCE_CONTENT, etContent.getText().toString());
 

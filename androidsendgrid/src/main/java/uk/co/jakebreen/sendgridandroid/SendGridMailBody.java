@@ -87,13 +87,33 @@ class SendGridMailBody {
 
     static JSONArray getContentParams(SendGridMail mail) throws JSONException {
         final JSONArray jsonArray = new JSONArray();
-        Map<String, String> contentMap = mail.getContent();
+        final Map<String, String> contentMap = mail.getContent();
+
+        // If using a template the content block must be at least a single character
+        // https://github.com/Jakebreen/android-sendgrid/issues/10
+        if (contentMap.isEmpty()) {
+            final JSONObject jsonObjectPlain = new JSONObject();
+            jsonObjectPlain.put(PARAMS_CONTENT_TYPE, TYPE_PLAIN);
+            jsonObjectPlain.put(PARAMS_CONTENT_VALUE, " ");
+            jsonArray.put(jsonObjectPlain);
+            final JSONObject jsonObjectHtml = new JSONObject();
+            jsonObjectHtml.put(PARAMS_CONTENT_TYPE, TYPE_HTML);
+            jsonObjectHtml.put(PARAMS_CONTENT_VALUE, " ");
+            jsonArray.put(jsonObjectHtml);
+            return jsonArray;
+        }
+
         if (contentMap.containsKey(TYPE_PLAIN)) {
             final JSONObject jsonObject = new JSONObject();
             jsonObject.put(PARAMS_CONTENT_TYPE, TYPE_PLAIN);
             jsonObject.put(PARAMS_CONTENT_VALUE, contentMap.get(TYPE_PLAIN));
             jsonArray.put(jsonObject);
             contentMap.remove(TYPE_PLAIN);
+        } else {
+            final JSONObject jsonObject = new JSONObject();
+            jsonObject.put(PARAMS_CONTENT_TYPE, TYPE_PLAIN);
+            jsonObject.put(PARAMS_CONTENT_VALUE, " ");
+            jsonArray.put(jsonObject);
         }
 
         if (contentMap.containsKey(TYPE_HTML)) {
@@ -102,6 +122,11 @@ class SendGridMailBody {
             jsonObject.put(PARAMS_CONTENT_VALUE, contentMap.get(TYPE_HTML));
             jsonArray.put(jsonObject);
             contentMap.remove(TYPE_HTML);
+        } else {
+            final JSONObject jsonObject = new JSONObject();
+            jsonObject.put(PARAMS_CONTENT_TYPE, TYPE_HTML);
+            jsonObject.put(PARAMS_CONTENT_VALUE, " ");
+            jsonArray.put(jsonObject);
         }
 
         for (Entry<String, String> set : contentMap.entrySet()) {
@@ -159,11 +184,8 @@ class SendGridMailBody {
     static JSONObject getTrackingSettings(SendGridMail mail) throws JSONException {
         final JSONObject jsonObject = new JSONObject();
         for (Entry<String, Map<String, Boolean>> set : mail.getTrackingSettings().entrySet()) {
-            System.out.println(set.getKey());
-            System.out.println(set.getValue());
             jsonObject.put(set.getKey(), set.getValue());
         }
-        System.out.println(jsonObject);
         return jsonObject;
     }
 

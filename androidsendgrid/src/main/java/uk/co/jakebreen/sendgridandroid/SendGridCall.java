@@ -12,33 +12,36 @@ class SendGridCall {
 
     private static final String BASE_URL = "https://sendgrid.com/v3/";
 
-    Callable<SendGridResponse> call(String url, final String key, SendGridMailBody body) {
+    Callable<SendGridResponse> call(String url, final String key, final SendGridMailBody body) {
         final String apiUrl = String.format("%s%s", BASE_URL, url);
-        return () -> {
-            final URL url1 = new URL(apiUrl);
-            final HttpURLConnection urlConnection = (HttpURLConnection) url1.openConnection();
-            urlConnection.setDoOutput(true);
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Authorization", key);
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty("Content-Type", "application/json; utf-8");
+        return new Callable<SendGridResponse>() {
+            @Override
+            public SendGridResponse call() throws Exception {
+                final URL url1 = new URL(apiUrl);
+                final HttpURLConnection urlConnection = (HttpURLConnection) url1.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setRequestProperty("Authorization", key);
+                urlConnection.setRequestProperty("Accept", "application/json");
+                urlConnection.setRequestProperty("Content-Type", "application/json; utf-8");
 
-            OutputStream outputStream = urlConnection.getOutputStream();
-            outputStream.write(body.getBody().toString().getBytes("UTF-8"));
-            outputStream.close();
+                OutputStream outputStream = urlConnection.getOutputStream();
+                outputStream.write(body.getBody().toString().getBytes("UTF-8"));
+                outputStream.close();
 
-            InputStream inputStream;
-            try {
-                inputStream = urlConnection.getInputStream();
-            } catch(IOException exception) {
-                inputStream = urlConnection.getErrorStream();
+                InputStream inputStream;
+                try {
+                    inputStream = urlConnection.getInputStream();
+                } catch (IOException exception) {
+                    inputStream = urlConnection.getErrorStream();
+                }
+
+                int code = urlConnection.getResponseCode();
+                String response = SendGridCall.this.readInputStream(inputStream);
+                urlConnection.disconnect();
+
+                return createResponse(code, response);
             }
-
-            int code = urlConnection.getResponseCode();
-            String response = readInputStream(inputStream);
-            urlConnection.disconnect();
-
-            return createResponse(code, response);
         };
     }
 
