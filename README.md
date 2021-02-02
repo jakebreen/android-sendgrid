@@ -33,6 +33,11 @@ mail.setFrom(@NonNull String email, @Nullable String name)
 mail.setSubject(@NonNull String subject)
 mail.setContent(@NonNull String body)
 ```
+Set a plain text or a html text content body, when using a template neither of these content vairable need to be set.
+```
+mail.setContent(@NonNull String body)
+mail.setHtmlContent(@NonNull String body)
+```
 
 Send a mail with the library's SendTask.
 ```
@@ -67,7 +72,6 @@ mail.addAttachment(@NonNull Uri uri)
 mail.addRecipientCarbonCopy(@NonNull String email, @Nullable String name)
 mail.addRecipientBlindCarbonCopy(@NonNull String email, @Nullable String name)
 mail.setReplyTo(@NonNull String email, @Nullable String name)
-mail.setHtmlContent(@NonNull String body)
 mail.setSendAt(@NonNull int sendAt)
 mail.setClickTrackingEnabled(@NonNull Boolean enabled)
 mail.setOpenTrackingEnabled(@NonNull Boolean enabled)
