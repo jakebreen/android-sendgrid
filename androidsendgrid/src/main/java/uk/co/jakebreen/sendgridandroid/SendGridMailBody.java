@@ -109,11 +109,6 @@ class SendGridMailBody {
             jsonObject.put(PARAMS_CONTENT_VALUE, contentMap.get(TYPE_PLAIN));
             jsonArray.put(jsonObject);
             contentMap.remove(TYPE_PLAIN);
-        } else {
-            final JSONObject jsonObject = new JSONObject();
-            jsonObject.put(PARAMS_CONTENT_TYPE, TYPE_PLAIN);
-            jsonObject.put(PARAMS_CONTENT_VALUE, " ");
-            jsonArray.put(jsonObject);
         }
 
         if (contentMap.containsKey(TYPE_HTML)) {
@@ -122,11 +117,6 @@ class SendGridMailBody {
             jsonObject.put(PARAMS_CONTENT_VALUE, contentMap.get(TYPE_HTML));
             jsonArray.put(jsonObject);
             contentMap.remove(TYPE_HTML);
-        } else {
-            final JSONObject jsonObject = new JSONObject();
-            jsonObject.put(PARAMS_CONTENT_TYPE, TYPE_HTML);
-            jsonObject.put(PARAMS_CONTENT_VALUE, " ");
-            jsonArray.put(jsonObject);
         }
 
         for (Entry<String, String> set : contentMap.entrySet()) {

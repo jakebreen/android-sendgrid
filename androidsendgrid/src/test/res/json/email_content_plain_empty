@@ -14,10 +14,6 @@
   },
   "content":[
     {
-      "type":"text/plain",
-      "value":" "
-    },
-    {
       "type":"text/html",
       "value":"Email content body"
     }
