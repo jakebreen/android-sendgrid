@@ -86,8 +86,8 @@ public class SendGridMailBodyTest {
     }
 
     @Test
-    public void givenPlainContent_whenCreatingMailBody_thenPlainContentAdded_andHtmlContentAddedAsEmpty() throws JSONException {
-        final String expectedValue = "[{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"},{\"type\":\"text/html\",\"value\":\" \"}]";
+    public void givenPlainContent_whenCreatingMailBody_thenPlainContentAdded_andNoHtmlContent() throws JSONException {
+        final String expectedValue = "[{\"type\":\"text/plain\",\"value\":\"" + CONTENT_BODY + "\"}]";
 
         final Map<String, String> map = new HashMap<>();
         map.put(TYPE_PLAIN, CONTENT_BODY);
@@ -97,8 +97,8 @@ public class SendGridMailBodyTest {
     }
 
     @Test
-    public void givenHtmlContent_whenCreatingMailBody_thenHtmlContentAdded_andPlainContentAddedAsEmpty() throws JSONException {
-        final String expectedValue = "[{\"type\":\"text/plain\",\"value\":\" \"},{\"type\":\"text/html\",\"value\":\"" + CONTENT_BODY + "\"}]";
+    public void givenHtmlContent_whenCreatingMailBody_thenHtmlContentAdded_andNoPlainContent() throws JSONException {
+        final String expectedValue = "[{\"type\":\"text/html\",\"value\":\"" + CONTENT_BODY + "\"}]";
 
         final Map<String, String> map = new HashMap<>();
         map.put(TYPE_HTML, CONTENT_BODY);
@@ -245,7 +245,7 @@ public class SendGridMailBodyTest {
     }
 
     @Test
-    public void givenPlainContent_thenHtmlContentEmpty() throws IOException {
+    public void givenPlainContent_thenNoHtmlContent() throws IOException {
         final Map<String, String> toMap = new HashMap<>();
         toMap.put("example@sendgrid.net", EMPTY);
         when(mail.getRecipients()).thenReturn(toMap);
@@ -262,7 +262,7 @@ public class SendGridMailBodyTest {
     }
 
     @Test
-    public void givenHtmlContent_thenPlainContentEmpty() throws IOException {
+    public void givenHtmlContent_thenNoPlainContent() throws IOException {
         final Map<String, String> toMap = new HashMap<>();
         toMap.put("example@sendgrid.net", EMPTY);
         when(mail.getRecipients()).thenReturn(toMap);
