@@ -14,7 +14,8 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity android:name="uk.co.jakebreen.sendgridandroid.testapp.MainActivity"
-                android:launchMode="singleInstance">
+                android:launchMode="singleInstance"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
