@@ -1,5 +1,6 @@
 package uk.co.jakebreen.sendgridandroid;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 import static uk.co.jakebreen.sendgridandroid.ErrorParser.parseError;
 
 public class SendGridTest {
@@ -27,11 +28,17 @@ public class SendGridTest {
     @Mock SendGridResponse response;
 
     private SendGrid sendGrid;
+    private AutoCloseable autoCloseable;
 
     @Before
     public void setup() {
-        initMocks(this);
+        autoCloseable = openMocks(this);
         sendGrid = SendGrid.create(API_KEY);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        autoCloseable.close();
     }
 
     @Test

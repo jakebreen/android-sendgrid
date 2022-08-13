@@ -2,6 +2,7 @@ package uk.co.jakebreen.sendgridandroid;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -15,7 +16,7 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 import static uk.co.jakebreen.sendgridandroid.SendGridMail.*;
 import static uk.co.jakebreen.sendgridandroid.SendGridMailBody.*;
 
@@ -25,9 +26,16 @@ public class SendGridMailBodyTest {
 
     @Mock SendGridMail mail;
 
+    private AutoCloseable autoCloseable;
+
     @Before
     public void setup() {
-        initMocks(this);
+        autoCloseable = openMocks(this);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        autoCloseable.close();
     }
 
     @Test
@@ -83,6 +91,17 @@ public class SendGridMailBodyTest {
         when(mail.getFrom()).thenReturn(map);
 
         assertEquals(expectedValue, getFromParams(mail).toString());
+    }
+
+    @Test
+    public void givenReplyToEmail_whenCreatingMailBody_thenReturnJsonBody() throws JSONException {
+        final String expectedValue = "{\"name\":\"John Doe\",\"email\":\"john.doe@example.com\"}";
+
+        final Map<String, String> map = new HashMap<>();
+        map.put("john.doe@example.com", "John Doe");
+        when(mail.getReplyTo()).thenReturn(map);
+
+        assertEquals(expectedValue, getReplyToParams(mail).toString());
     }
 
     @Test
