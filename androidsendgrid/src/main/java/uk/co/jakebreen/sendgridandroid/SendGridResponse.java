@@ -6,14 +6,20 @@ public class SendGridResponse {
 
     private final int code;
     private final String errorMessage;
+    private final Exception exception;
 
-    private SendGridResponse(int code, @Nullable String errorMessage) {
+    private SendGridResponse(int code, @Nullable String errorMessage, @Nullable Exception exception) {
         this.code = code;
         this.errorMessage = errorMessage;
+        this.exception = exception;
     }
 
     private static SendGridResponse create(int code, String errorMessage) {
-        return new SendGridResponse(code, errorMessage);
+        return new SendGridResponse(code, errorMessage, null);
+    }
+
+    private static SendGridResponse create(Exception exception) {
+        return new SendGridResponse(0, "", exception);
     }
 
     /**
@@ -44,6 +50,10 @@ public class SendGridResponse {
         return errorMessage;
     }
 
+    Exception getException() {
+        return exception;
+    }
+
     static class Factory {
 
         static SendGridResponse success(int response) {
@@ -52,6 +62,10 @@ public class SendGridResponse {
 
         static SendGridResponse error(int response, String errorMessage) {
             return SendGridResponse.create(response, ErrorParser.parseError(errorMessage));
+        }
+
+        static SendGridResponse error(Exception exception) {
+            return SendGridResponse.create(exception);
         }
 
     }

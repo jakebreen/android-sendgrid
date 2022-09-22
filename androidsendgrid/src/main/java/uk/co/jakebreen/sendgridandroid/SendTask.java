@@ -1,25 +1,25 @@
 package uk.co.jakebreen.sendgridandroid;
 
-import android.os.AsyncTask;
-
-public class SendTask extends AsyncTask<Void, Void, SendGridResponse> {
+public class SendTask {
 
     private final SendGrid sendGrid;
-    private final SendGridMail mail;
 
-    public SendTask(SendGrid sendGrid, SendGridMail mail) {
+    public SendTask(SendGrid sendGrid) {
         this.sendGrid = sendGrid;
-        this.mail = mail;
     }
 
-    @Override
-    protected SendGridResponse doInBackground(Void... voids) {
-        try {
-            return sendGrid.send(mail).call();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return SendGridResponse.Factory.error(0, e.getMessage());
-        }
+    /**
+     * API mail send request, provide with a {@link SendGridMail} and returns a {@link SendGridResponse}.
+     * Rethrows any exceptions.
+     *
+     * @param mail the SendGridMail to send to the API
+     * @return the response generated from the API request
+     */
+    public SendGridResponse send(SendGridMail mail) throws Exception {
+        final SendGridResponse response = new SendTaskAsync(sendGrid, mail).execute().get();
+        if (response.getException() != null)
+            throw response.getException();
+        return response;
     }
 
 }
