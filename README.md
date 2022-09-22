@@ -41,8 +41,8 @@ mail.setHtmlContent(@NonNull String body)
 
 Send a mail with the library's SendTask.
 ```
-SendTask task = new SendTask(sendGrid, mail);
-SendGridResponse response = task.execute().get();
+SendTask task = new SendTask(sendGrid);
+SendGridResponse response = task.send(mail);
 ```
 
 Send a mail with RxJava.
