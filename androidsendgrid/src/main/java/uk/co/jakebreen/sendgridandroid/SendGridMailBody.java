@@ -28,6 +28,7 @@ class SendGridMailBody {
     private static final String BODY_ATTACHMENTS = "attachments";
     private static final String BODY_TRACKING_SETTINGS = "tracking_settings";
     private static final String BODY_DYNAMIC_TEMPLATE_DATA = "dynamic_template_data";
+    private static final String BODY_UNSUBSCRIBE_GROUP = "asm";
 
     private static final String PARAMS_EMAIL = "email";
     private static final String PARAMS_NAME = "name";
@@ -35,6 +36,8 @@ class SendGridMailBody {
     private static final String PARAMS_CONTENT_VALUE = "value";
     private static final String PARAMS_ATTACHMENT_CONTENT = "content";
     private static final String PARAMS_ATTACHMENT_FILENAME = "filename";
+    private static final String PARAM_UNSUBSCRIBE_GROUP_ID = "group_id";
+    private static final String PARAM_UNSUBSCRIBE_GROUP_IDS = "groups_to_display";
 
     private final JSONObject body;
 
@@ -74,6 +77,9 @@ class SendGridMailBody {
                 parent.put(BODY_ATTACHMENTS, getAttachments(mail));
             if (mail.getTrackingSettings().size() > 0) {
                 parent.put(BODY_TRACKING_SETTINGS, getTrackingSettings(mail));
+            }
+            if (mail.getUnsubscribeGroupId() != 0) {
+                parent.put(BODY_UNSUBSCRIBE_GROUP, getUnsubscribeGroup(mail));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -176,6 +182,18 @@ class SendGridMailBody {
         for (Entry<String, Map<String, Boolean>> set : mail.getTrackingSettings().entrySet()) {
             jsonObject.put(set.getKey(), set.getValue());
         }
+        return jsonObject;
+    }
+
+    static JSONObject getUnsubscribeGroup(SendGridMail mail) throws JSONException {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put(PARAM_UNSUBSCRIBE_GROUP_ID, mail.getUnsubscribeGroupId());
+
+        if (!mail.getUnsubscribeGroupIds().isEmpty()) {
+            final JSONArray jsonArray = new JSONArray(mail.getUnsubscribeGroupIds());
+            jsonObject.put(PARAM_UNSUBSCRIBE_GROUP_IDS, jsonArray);
+        }
+
         return jsonObject;
     }
 

@@ -278,6 +278,26 @@ public class SendGridMailBodyTest {
         assertEquals(parseJsonFile("/json/email_content_plain_empty"), create(mail).getBody().toString());
     }
 
+    @Test
+    public void givenUnsubscribeGroupIds_thenReturnJsonBody() throws IOException {
+        final Map<String, String> toMap = new HashMap<>();
+        toMap.put("example@sendgrid.net", EMPTY);
+        when(mail.getRecipients()).thenReturn(toMap);
+
+        final Map<String, String> fromMap = new HashMap<>();
+        fromMap.put("john.doe@example.com", "John Doe");
+        when(mail.getFrom()).thenReturn(fromMap);
+
+        final Map<String, String> contentMap = new HashMap<>();
+        contentMap.put(TYPE_HTML, CONTENT_BODY);
+        when(mail.getContent()).thenReturn(contentMap);
+
+        when(mail.getUnsubscribeGroupId()).thenReturn(1000);
+        when(mail.getUnsubscribeGroupIds()).thenReturn(Arrays.asList(1000, 2000, 3000));
+
+        assertEquals(parseJsonFile("/json/email_unsubscribe_groups"), create(mail).getBody().toString());
+    }
+
     private String parseJsonFile(String file) throws IOException {
         final InputStream inputStream = getClass().getResourceAsStream(file);
         final StringBuilder stringBuilder = new StringBuilder();

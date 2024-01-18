@@ -21,10 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 import uk.co.jakebreen.sendgridandroid.SendGrid;
 import uk.co.jakebreen.sendgridandroid.SendGridMail;
 import uk.co.jakebreen.sendgridandroid.SendGridResponse;
@@ -191,14 +188,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void send(SendGridMail mail) {
-        SendTask task = new SendTask(sendGrid, mail);
+        final SendTask task = new SendTask(sendGrid);
         try {
-            SendGridResponse response = task.execute().get();
+            SendGridResponse response = task.send(mail);
             onResponse(response);
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
 //        disposable = Single.fromCallable(sendGrid.send(mail))
