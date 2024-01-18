@@ -76,6 +76,8 @@ mail.setSendAt(@NonNull int sendAt)
 mail.setClickTrackingEnabled(@NonNull Boolean enabled)
 mail.setOpenTrackingEnabled(@NonNull Boolean enabled)
 mail.setSubscriptionTrackingEnabled(@NonNull Boolean enabled)
+mail.setUnsubscribeGroupId(@NonNull int groupId)
+mail.setUnsubscribeGroupIds(@NonNull int groupId, List<Integer> groupIds)
 ```
 
 Transactional email templates and custom data can be applied to the SendGridMail in the form of a JSONObject structured into key/value pairs

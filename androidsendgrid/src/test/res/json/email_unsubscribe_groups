@@ -1,0 +1,26 @@
+{
+  "personalizations":[
+    {
+      "to":[
+        {
+          "email":"example@sendgrid.net"
+        }
+      ]
+    }
+  ],
+  "from":{
+    "name":"John Doe",
+    "email":"john.doe@example.com"
+  },
+  "asm":
+      {
+        "group_id":1000,
+        "groups_to_display":[1000,2000,3000]
+      },
+  "content":[
+    {
+      "type":"text/html",
+      "value":"Email content body"
+    }
+  ]
+}

@@ -41,6 +41,8 @@ public class SendGridMail {
     private int sendAt;
     private List<Attachment> attachments = new ArrayList<>();
     private JSONObject dynamicTemplateData;
+    private int unsubscribeGroupId;
+    private final List<Integer> unsubscribeGroupIds = new ArrayList<>();
 
     public SendGridMail() { }
 
@@ -233,6 +235,31 @@ public class SendGridMail {
     }
 
     /**
+     * Add an unsubscribe group id of type {@link Integer}.
+     *
+     * @param groupId the unsubscribe group to associate with this email
+     */
+    public void setUnsubscribeGroupId(@NonNull int groupId) {
+        unsubscribeGroupId = groupId;
+    }
+
+    /**
+     * Add an unsubscribe group id of type {@link Integer} to the email or a list of unsubscribe
+     * groups to display up to a maximum of 25.
+     *
+     * @param groupId the unsubscribe group to associate with this email
+     * @param groupIds an array containing the unsubscribe groups that you would like to be
+     *                 displayed on the unsubscribe preferences page
+     */
+    public void setUnsubscribeGroupIds(@NonNull int groupId, List<Integer> groupIds) {
+        if (groupIds.size() > 25)
+            throw new IllegalArgumentException("The list of unsubscribe group IDs is greater than 25.");
+
+        unsubscribeGroupId = groupId;
+        unsubscribeGroupIds.addAll(groupIds);
+    }
+
+    /**
      * Returns a list of attached file names.
      *
      * @return list of file names
@@ -291,6 +318,14 @@ public class SendGridMail {
 
     JSONObject getDynamicTemplateData() {
         return dynamicTemplateData;
+    }
+
+    int getUnsubscribeGroupId() {
+        return unsubscribeGroupId;
+    }
+
+    List<Integer> getUnsubscribeGroupIds() {
+        return unsubscribeGroupIds;
     }
 
     static class Attachment {
